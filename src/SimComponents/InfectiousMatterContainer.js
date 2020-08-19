@@ -25,8 +25,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const InfectiousMatterReducer = (InfectiousMatterRef, action) => {
+  if (action.type == 'add_residence') {
+    let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
+  }
+  if (action.type == 'add_agents') {
+    if (action.payload.residence && action.payload.num_agents) {
+      for (let i=0; i< action.payload.num_agents; i++) {
+        InfectiousMatterRef.current.add_agent(action.payload.residence)
+      }
+    }
+  }
   if (action.type == 'setup') {
-    console.log('trying to')
     let res_prop = {
       type: "residence", 
       friction: 0.02,

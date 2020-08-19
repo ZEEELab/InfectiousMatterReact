@@ -58,8 +58,26 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterReduce
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
         InfectiousMatterRef.current.setup_renderer(sim_div.current);
         InfectiousMatterRef.current.setup_matter_env()
-        InfectiousMatterReducer(InfectiousMatterRef, {type:'setup'})
+        //InfectiousMatterReducer(InfectiousMatterRef, {type:'setup'})
         
+        let res_prop = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 10,
+                    y: 10,
+                },
+                max: {
+                    x: 150,
+                    y: 150,
+                }
+            }
+        };
+        InfectiousMatterReducer(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
+        let temp_res = InfectiousMatterRef.current.locations[0];
+        InfectiousMatterReducer(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 10}});
+
     })
 
     return (
