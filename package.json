@@ -3,12 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "color-interpolate": "^1.0.5",
+    "colormap": "^2.3.1",
+    "fastpriorityqueue": "^0.6.3",
+    "jstat": "^1.9.3",
+    "matter-js": "^0.14.2",
+    "matter-wrap": "^0.2.0",
+    "plotly.js": "^1.54.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-plotly.js": "^2.4.0",
+    "react-scripts": "3.4.3",
+    "uniqid": "^5.2.0",
+    "vivagraphjs": "^0.12.0"
   },
   "scripts": {
     "start": "react-scripts start",
