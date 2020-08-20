@@ -485,20 +485,14 @@ InfectiousMatter.prototype.pulse_orgs_event = function() {
     };
 };
 
-InfectiousMatter.prototype.add_migration_link = function(location_a, location_b, num_agents_per_day_ab, num_agents_per_day_ba=num_agents_per_day_ab) {
+InfectiousMatter.prototype.add_migration_link = function(from_location, to_location, num_agents_per_day) {
     //add object to migration_links container that tells us how often migrations should occur
-    var existing_edge_ab = this.migration_graph.hasLink(location_a.uuid, location_b.uuid);
-    var existing_edge_ba = this.migration_graph.hasLink(location_b.uuid, location_a.uuid);
+    var existing_edge = this.migration_graph.hasLink(from_location.uuid, to_location.uuid);
 
-    if(existing_edge_ab) {
-        existing_edge_ab.data.num_agents = num_agents_per_day_ab;
+    if(existing_edge) {
+        existing_edge.data.num_agents = num_agents_per_day;
     } else {
-        this.migration_graph.addLink(location_a.uuid, location_b.uuid, {num_agents:num_agents_per_day_ab});
-    }
-    if(existing_edge_ba) {
-        existing_edge_ba.data.num_agents = num_agents_per_day_ba;
-    } else {
-        this.migration_graph.addLink(location_b.uuid, location_a.uuid, {num_agents:num_agents_per_day_ba});
+        this.migration_graph.addLink(from_location.uuid, to_location.uuid, {num_agents:num_agents_per_day});
     }
 };
 

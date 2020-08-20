@@ -45,7 +45,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     }
   }
   if (action.type == 'add_migration_link') {
-    InfectiousMatterRef.current.add_migration_link(action.payload.location_a, action.payload.location_b, 0, 2)
+    InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
   }
 };
 
