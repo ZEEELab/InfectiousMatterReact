@@ -1,5 +1,6 @@
+import { jStat } from 'jstat';
+
 var uniqid = require("uniqid");
-var { jStat } = require('jstat')
 
 
 
@@ -23,7 +24,6 @@ function Pathogen(color, parent) {
 	this.contagiousness = 0.5;
 }
 
-
 Pathogen.prototype.get_offspring = function(mut_rate) {
 	let offspring_color = this.color_float;
 	let new_pathogen = new Pathogen(offspring_color);
@@ -34,4 +34,4 @@ Pathogen.prototype.get_offspring = function(mut_rate) {
 	return new_pathogen;
 };
 
-module.exports = Pathogen;
+export default Pathogen;

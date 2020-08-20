@@ -1,9 +1,11 @@
+import { jStat } from 'jstat';
+import Pathogen from './pathogen.js';
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
 Matter.use('matter-wrap', MatterCollisionEvents);
 
-var { jStat } = require('jstat')
+
 Matter._seed = 2;
 Math.random = Matter.Common.random;
 jStat._random_fn = Matter.Common.random;
@@ -14,7 +16,6 @@ let _Viva = require('vivagraphjs');
 var ContactGraph = new _Viva.Graph.graph();
 
 var Location = require('./location.js');
-var Pathogen = require('./pathogen.js');
 var Cohort = require('./cohort.js');
 var EventQueue = require('./event_queue.js');
 
@@ -98,6 +99,7 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
     this.matter_world = World.create() 
     this.headless = run_headless || false;
     this.pathogen_color_range = pathogen_color_range;
+    this.migration = null;
 
     console.log("creating infectious matter environment!");
 
@@ -518,4 +520,4 @@ InfectiousMatter.prototype.migrate_event = function(residences, num_visitors) {
     };
 };
 
-module.exports = { InfectiousMatter, AgentStates, ContactGraph };
+export { InfectiousMatter, AgentStates, ContactGraph };
