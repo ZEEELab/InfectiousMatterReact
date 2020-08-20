@@ -103,6 +103,9 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
 
         InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {location_a:res1, location_b:res2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {location_a:res1, location_b:res2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {location_a:res1, location_b:res2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {location_a:res1, location_b:res2}});
 
     })
 
