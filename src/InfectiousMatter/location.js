@@ -1,3 +1,5 @@
+var uniqid = require("uniqid");
+
 function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
@@ -8,6 +10,7 @@ function getRandomChoice(arr) {
 
 function Location(name) {
 	this.name = name;
+	this.uuid = uniqid();
 	this.bounds = undefined;
 	this.friction = 0.2;
 	this.occupants = [];
@@ -66,13 +69,18 @@ Location.prototype.migrate_to = function(destination, agent, callback) {
 	}
 };
 
-Location.prototype.migrate_random_to = function(destination, callback) {
-	if (this.occupants.length > 0)
-	{
+Location.prototype.try_getting_random_residents = function(num_to_get) {
+	let to_return = [];
+	for (let i=0; i<num_to_get; i++) {
 		let temp_a = getRandomChoice(this.occupants);
-		this.migrate_to(destination, temp_a, callback);	
+		if(temp_a && temp_a.migrating == false) {
+			to_return.push(temp_a);
+		}
 	}
-};
+
+	return to_return;
+
+}
 
 Location.prototype.add_agent = function(agent) {
 	this.occupants.push(agent);

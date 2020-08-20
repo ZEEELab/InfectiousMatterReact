@@ -98,8 +98,7 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
     this.simulation_colors = Matter.Common.extend(default_simulation_colors, simulation_colors);
     this.matter_world = World.create() 
     this.headless = run_headless || false;
-    this.pathogen_color_range = pathogen_color_range;
-    this.migration = null;
+    this.pathogen_color_range = pathogen_color_range;    
 
     console.log("creating infectious matter environment!");
 
@@ -171,6 +170,10 @@ InfectiousMatter.prototype.run_headless = function(timelimit) {
 InfectiousMatter.prototype.setup_matter_env = function() {
     ContactGraph.clear();
     this.locations = [];
+    
+    this.migration_graph = new _Viva.Graph.graph()
+    this.location_uuid_hash = {};
+
     this.agents = [];
     this.cohorts = [];
     this.cur_sim_time = 0;
@@ -267,6 +270,7 @@ InfectiousMatter.prototype.add_location = function(name, location_properties) {
     new_location.viva_node_color = this.simulation_colors.viva_colors[this.locations.length];
 
     this.locations.push(new_location);
+    this.location_uuid_hash[new_location.uuid] = new_location;
     return new_location;
 };
 
@@ -481,43 +485,63 @@ InfectiousMatter.prototype.pulse_orgs_event = function() {
     };
 };
 
+InfectiousMatter.prototype.add_migration_link = function(location_a, location_b, num_agents_per_day_ab, num_agents_per_day_ba=num_agents_per_day_ab) {
+    //add object to migration_links container that tells us how often migrations should occur
+    var existing_edge_ab = this.migration_graph.hasLink(location_a.uuid, location_b.uuid);
+    var existing_edge_ba = this.migration_graph.hasLink(location_b.uuid, location_a.uuid);
 
-InfectiousMatter.prototype.migrate_event = function(residences, num_visitors) {
+    if(existing_edge_ab) {
+        existing_edge_ab.data.num_agents = num_agents_per_day_ab;
+    } else {
+        this.migration_graph.addLink(location_a.uuid, location_b.uuid, {num_agents:num_agents_per_day_ab});
+    }
+    if(existing_edge_ba) {
+        existing_edge_ba.data.num_agents = num_agents_per_day_ba;
+    } else {
+        this.migration_graph.addLink(location_b.uuid, location_a.uuid, {num_fagents:num_agents_per_day_ba});
+    }
+};
+
+
+
+InfectiousMatter.prototype.new_migration_event = function() {
     return () => {
-        for (let i=0; i < num_visitors; i++) {
-            let temp_agent = Matter.Common.choose(this.agents);
-            if (temp_agent.migrating) continue;
-            temp_agent.migrating = true;
+        this.migration_graph.forEachLink((link) => {
+            console.log(link);
+            let source = this.location_uuid_hash[link.fromId];
+            let dest = this.location_uuid_hash[link.toId];
 
-            let temp_dest = Matter.Common.choose(residences);
-            let agent_home = temp_agent.home || temp_agent.location;
+            let to_migrate = source.try_getting_random_residents(link.data.num_agents);
+            to_migrate.forEach( migrating_agent => {
+                migrating_agent.home_state = {
+                    location:source, 
+                    position: {...migrating_agent.body.position}, 
+                    velocity: {...migrating_agent.body.velocity}
+                };
 
-            temp_agent.home_state = {position: temp_agent.body.position, velocity: temp_agent.body.velocity};
+                source.migrate_to(dest, migrating_agent, function(agent) {
+                    agent.body.plugin.wrap = dest.bounds;
+                    Matter.Body.setPosition(agent.body, dest.get_random_position());
+                    agent.body.frictionAir = dest.friction;
+                });
 
-            temp_agent.location.migrate_to(temp_dest, temp_agent, function(agent) {
-                    //update bounds...
-                    agent.body.plugin.wrap = temp_dest.bounds;
-                    Matter.Body.setPosition(agent.body, temp_dest.get_random_position());
-                    agent.body.frictionAir = temp_dest.friction;
-                }
-            );
-            
-            this.add_event( {
-                time: this.simulation_params.sim_time_per_day, 
-                callback: function() {
-                    temp_agent.location.migrate_to(agent_home, temp_agent, function(agent) {
-                    //update bounds...
-                        agent.body.plugin.wrap = agent_home.bounds;
-                        Matter.Body.setPosition(agent.body, agent_home.get_random_position());
-                        Matter.Body.setVelocity(agent.body, agent.home_state.velocity);
-                        agent.body.frictionAir = agent_home.friction;
-                        agent.migrating = false;
-                    });
-                }
-            });
+                this.add_event( {
+                    time: this.simulation_params.sim_time_per_day,
+                    callback: () => {
+                        dest.migrate_to(source, migrating_agent, (agent) => {
+                            Matter.Body.setPosition(agent.body, migrating_agent.home_state.position);
+                            agent.body.plugin.wrap = source.bounds;
+                            Matter.Body.setVelocity(agent.body, migrating_agent.home_state.velocity);
+                            agent.body.frictionAir = source.friction;
+                            agent.migrating = false;
+                        })
+                    }
+                })
+            } )
 
-        }
-    };
+            //TODO: check if this link still makes sense, if not we should remove it...
+        })
+    }
 };
 
 export { InfectiousMatter, AgentStates, ContactGraph };

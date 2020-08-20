@@ -91,8 +91,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
             }
         };
 
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop2}});
+        let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
+        let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop2}});
 
         let temp_res = InfectiousMatterRef.current.locations[0];
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 100}});
@@ -101,7 +101,9 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         temp_res = InfectiousMatterRef.current.locations[1];
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 100}});
 
-        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.migrate_event(InfectiousMatterRef.current.locations, ), recurring: true });
+        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {location_a:res1, location_b:res2}});
+
     })
 
     return (

@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'add_residence') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
+    return res;
   }
   if (action.type == 'add_agents') {
     if (action.payload.residence && action.payload.num_agents) {
@@ -43,8 +44,9 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
       }
     }
   }
-
-  return InfectiousMatterRef;
+  if (action.type == 'add_migration_link') {
+    InfectiousMatterRef.current.add_migration_link(action.payload.location_a, action.payload.location_b, 10, 0)
+  }
 };
 
 const InfectiousMatterContainer = (props) => {
