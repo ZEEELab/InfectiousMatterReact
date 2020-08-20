@@ -4,8 +4,45 @@ const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
 var { InfectiousMatter, AgentStates, ContactGraph } = require('../InfectiousMatter/simulation.js');
 
+InfectiousMatter.prototype.migrate_event = function(residences, num_visitors) {
+    return () => {
+        for (let i=0; i < num_visitors; i++) {
+            let temp_agent = Matter.Common.choose(this.agents);
+            if (temp_agent.migrating) continue;
+            temp_agent.migrating = true;
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterReducer}) => {
+            let temp_dest = Matter.Common.choose(residences);
+            let agent_home = temp_agent.home || temp_agent.location;
+
+            temp_agent.home_state = {position: temp_agent.body.position, velocity: temp_agent.body.velocity};
+
+            temp_agent.location.migrate_to(temp_dest, temp_agent, function(agent) {
+                    //update bounds...
+                    agent.body.plugin.wrap = temp_dest.bounds;
+                    Matter.Body.setPosition(agent.body, temp_dest.get_random_position());
+                    agent.body.frictionAir = temp_dest.friction;
+                }
+            );
+            
+            this.add_event( {
+                time: this.simulation_params.sim_time_per_day, 
+                callback: function() {
+                    temp_agent.location.migrate_to(agent_home, temp_agent, function(agent) {
+                    //update bounds...
+                        agent.body.plugin.wrap = agent_home.bounds;
+                        Matter.Body.setPosition(agent.body, agent_home.get_random_position());
+                        Matter.Body.setVelocity(agent.body, agent.home_state.velocity);
+                        agent.body.frictionAir = agent_home.friction;
+                        agent.migrating = false;
+                    });
+                }
+            });
+
+        }
+    };
+};
+
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
     const sim_div = useRef(null);
 
 
@@ -24,7 +61,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterReduce
         
         let simulation_params = {
             sim_time_per_day: 1000,
-            agent_size: 4,
+            agent_size: 3,
             link_lifetime: 200,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
@@ -57,8 +94,9 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterReduce
         console.log('here')
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
         InfectiousMatterRef.current.setup_renderer(sim_div.current);
-        InfectiousMatterRef.current.setup_matter_env()
-        //InfectiousMatterReducer(InfectiousMatterRef, {type:'setup'})
+        InfectiousMatterRef.current.setup_matter_env()        
+
+
         
         let res_prop = {
             type: "residence", 
@@ -74,10 +112,33 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterReduce
                 }
             }
         };
-        InfectiousMatterReducer(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
-        let temp_res = InfectiousMatterRef.current.locations[0];
-        InfectiousMatterReducer(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 10}});
 
+        let res_prop2 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 180,
+                    y: 180,
+                },
+                max: {
+                    x: 320,
+                    y: 320,
+                }
+            }
+        };
+
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop2}});
+
+        let temp_res = InfectiousMatterRef.current.locations[0];
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 100}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'infect_random_agents', payload:{num_agents: 2}});
+        
+        temp_res = InfectiousMatterRef.current.locations[1];
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 100}});
+
+        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.migrate_event(InfectiousMatterRef.current.locations, ), recurring: true });
     })
 
     return (

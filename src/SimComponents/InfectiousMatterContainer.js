@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InfectiousMatterReducer = (InfectiousMatterRef, action) => {
+const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'add_residence') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
   }
@@ -35,28 +35,13 @@ const InfectiousMatterReducer = (InfectiousMatterRef, action) => {
       }
     }
   }
-  if (action.type == 'setup') {
-    let res_prop = {
-      type: "residence", 
-      friction: 0.02,
-      bounds: {
-          min: {
-              x: 10,
-              y: 10,
-          },
-          max: {
-              x: 150,
-              y: 150,
-          }
+  if (action.type == 'infect_random_agents') {
+    if(action.payload.num_agents) {
+      for(let i=0; i< action.payload.num_agents; i++) {
+        let random_agent = Matter.Common.choose(InfectiousMatterRef.current.agents);
+        InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED);
       }
-    };
-    
-    let res = InfectiousMatterRef.current.add_location('residence', res_prop);
-    for (let i=0; i< 50; i++) {
-      InfectiousMatterRef.current.add_agent(res)
     }
-    let random_agent = Matter.Common.choose(InfectiousMatterRef.current.agents);
-    InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED);
   }
 
   return InfectiousMatterRef;
@@ -73,7 +58,7 @@ const InfectiousMatterContainer = (props) => {
           <Card className={classes.paper}>
             <InfectiousMatterSimulation 
                 InfectiousMatterRef={InfectiousMatterRef}
-                InfectiousMatterReducer={InfectiousMatterReducer}
+                InfectiousMatterAPI={InfectiousMatterAPI}
               />
           </Card>
         </Grid>
