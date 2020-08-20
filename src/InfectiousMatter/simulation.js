@@ -317,6 +317,66 @@ InfectiousMatter.prototype.register_infection_callback = function(callback) {
     this.post_infection_callback = callback;
 }
 
+InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
+    return () => {
+        if (edge.data.timestamp < this.cur_sim_time - this.simulation_params.link_lifetime) {
+            ContactGraph.removeLink(edge);
+        } 
+        else {
+            this.add_event( {
+                time:(this.cur_sim_time + this.simulation_params.link_lifetime) - edge.data.timestamp,
+                callback: this._check_edge_for_removal(edge)
+            }); 
+        }
+    };
+};
+
+InfectiousMatter.prototype._default_interaction_callback  = function(this_agent) {
+    return (
+        (other_agent) => {
+            if ((other_agent.state == AgentStates.S_INFECTED ||
+                other_agent.state == AgentStates.A_INFECTED) && 
+                this_agent.agent_object.state == AgentStates.SUSCEPTIBLE) {
+                let per_contact_infection = this.infection_params.per_contact_infection;
+    
+                //TODO: Check pathogen per_contact_infection overwrite world wide?
+                if (this.infection_params.use_pathogen_contagiousness && other_agent.pathogen) {
+                    per_contact_infection = other_agent.pathogen.contagiousness;
+    
+                }
+                if (Matter.Common.random(0, 1) < per_contact_infection) {
+                    //we're going to infect this org so 
+                    //now we have to pick which state...
+                    let future_state;
+                    if (Matter.Common.random(0,1) < this.infection_params.fraction_asymptomatic) {
+                        future_state = AgentStates.A_INFECTED;
+                    } else {
+                        future_state = AgentStates.S_INFECTED;
+                    }
+    
+    
+                    this.expose_org(this_agent, future_state, other_agent);
+                    //this.post_infection_callback(this_agent.agent_object, other_agent);
+                }
+            }
+            assert(other_agent.uuid && this_agent.agent_object.uuid)
+
+            var this_edge = ContactGraph.hasLink(this_agent.agent_object.uuid, other_agent.uuid) || ContactGraph.hasLink(other_agent.uuid, this_agent.agent_object.uuid);
+            if (this_edge){
+                this_edge.data.timestamp = this.cur_sim_time;
+            } else {
+                assert(ContactGraph.hasNode(this_agent.agent_object.uuid) && ContactGraph.hasNode(this_agent.agent_object.uuid));
+                this_edge = ContactGraph.addLink(this_agent.agent_object.uuid, other_agent.uuid, {origin:this_agent.agent_object.uuid, timestamp:this.cur_sim_time});
+            }
+
+            this.add_event( {
+                time: this.simulation_params.link_lifetime+1, 
+                callback: this._check_edge_for_removal(this_edge)
+            });
+        }
+    );
+};
+
 InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
     if( typeof agent_state === 'undefined') {
         agent_state = AgentStates.SUSCEPTIBLE;
@@ -339,62 +399,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
 
     home_location.add_agent(new_agent_body.agent_object);
 
-    new_agent_body.agent_object.register_interaction_callback( (other_agent) => {
-        if ((other_agent.state == AgentStates.S_INFECTED ||
-            other_agent.state == AgentStates.A_INFECTED) && 
-            new_agent_body.agent_object.state == AgentStates.SUSCEPTIBLE) {
-            let per_contact_infection = this.infection_params.per_contact_infection;
-
-            //TODO: Check pathogen per_contact_infection overwrite world wide?
-            if (this.infection_params.use_pathogen_contagiousness && other_agent.pathogen) {
-                per_contact_infection = other_agent.pathogen.contagiousness;
-
-            }
-            if (Matter.Common.random(0, 1) < per_contact_infection) {
-                //we're going to infect this org so 
-                //now we have to pick which state...
-                let future_state;
-                if (Matter.Common.random(0,1) < this.infection_params.fraction_asymptomatic) {
-                    future_state = AgentStates.A_INFECTED;
-                } else {
-                    future_state = AgentStates.S_INFECTED;
-                }
-
-
-                this.expose_org(new_agent_body, future_state, other_agent);
-                //this.post_infection_callback(new_agent_body.agent_object, other_agent);
-            }
-        }
-        assert(other_agent.uuid && new_agent_body.agent_object.uuid)
-
-        var this_edge = ContactGraph.hasLink(new_agent_body.agent_object.uuid, other_agent.uuid) || ContactGraph.hasLink(other_agent.uuid, new_agent_body.agent_object.uuid);
-        if (this_edge){
-            this_edge.data.timestamp = this.cur_sim_time;
-        } else {
-            assert(ContactGraph.hasNode(new_agent_body.agent_object.uuid) && ContactGraph.hasNode(new_agent_body.agent_object.uuid));
-            this_edge = ContactGraph.addLink(new_agent_body.agent_object.uuid, other_agent.uuid, {origin:new_agent_body.agent_object.uuid, timestamp:this.cur_sim_time});
-        }
-
-        this.add_event( {
-            time: this.simulation_params.link_lifetime+1, 
-            callback: _check_edge_for_removal(this_edge)
-        });
-
-    });
-
-    var _check_edge_for_removal = (edge) => {
-        return () => {
-            if (edge.data.timestamp < this.cur_sim_time - this.simulation_params.link_lifetime) {
-                ContactGraph.removeLink(edge);
-            } 
-            else {
-                this.add_event( {
-                    time:(this.cur_sim_time + this.simulation_params.link_lifetime) - edge.data.timestamp,
-                    callback: _check_edge_for_removal(edge)
-                }); 
-            }
-        };
-    };
+    new_agent_body.agent_object.register_interaction_callback(this._default_interaction_callback(new_agent_body));
 
 
     new_agent_body.onCollide( (pair) => {
@@ -470,6 +475,45 @@ InfectiousMatter.prototype.pulse_orgs_event = function() {
                     y:Matter.Common.random(-2e-5*this.infection_params.movement_scale, 2e-5*this.infection_params.movement_scale)
                 });
             }
+        }
+    };
+};
+
+
+InfectiousMatter.prototype.migrate_event = function(residences, num_visitors) {
+    return () => {
+        for (let i=0; i < num_visitors; i++) {
+            let temp_agent = Matter.Common.choose(this.agents);
+            if (temp_agent.migrating) continue;
+            temp_agent.migrating = true;
+
+            let temp_dest = Matter.Common.choose(residences);
+            let agent_home = temp_agent.home || temp_agent.location;
+
+            temp_agent.home_state = {position: temp_agent.body.position, velocity: temp_agent.body.velocity};
+
+            temp_agent.location.migrate_to(temp_dest, temp_agent, function(agent) {
+                    //update bounds...
+                    agent.body.plugin.wrap = temp_dest.bounds;
+                    Matter.Body.setPosition(agent.body, temp_dest.get_random_position());
+                    agent.body.frictionAir = temp_dest.friction;
+                }
+            );
+            
+            this.add_event( {
+                time: this.simulation_params.sim_time_per_day, 
+                callback: function() {
+                    temp_agent.location.migrate_to(agent_home, temp_agent, function(agent) {
+                    //update bounds...
+                        agent.body.plugin.wrap = agent_home.bounds;
+                        Matter.Body.setPosition(agent.body, agent_home.get_random_position());
+                        Matter.Body.setVelocity(agent.body, agent.home_state.velocity);
+                        agent.body.frictionAir = agent_home.friction;
+                        agent.migrating = false;
+                    });
+                }
+            });
+
         }
     };
 };

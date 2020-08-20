@@ -4,43 +4,6 @@ const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
 var { InfectiousMatter, AgentStates, ContactGraph } = require('../InfectiousMatter/simulation.js');
 
-InfectiousMatter.prototype.migrate_event = function(residences, num_visitors) {
-    return () => {
-        for (let i=0; i < num_visitors; i++) {
-            let temp_agent = Matter.Common.choose(this.agents);
-            if (temp_agent.migrating) continue;
-            temp_agent.migrating = true;
-
-            let temp_dest = Matter.Common.choose(residences);
-            let agent_home = temp_agent.home || temp_agent.location;
-
-            temp_agent.home_state = {position: temp_agent.body.position, velocity: temp_agent.body.velocity};
-
-            temp_agent.location.migrate_to(temp_dest, temp_agent, function(agent) {
-                    //update bounds...
-                    agent.body.plugin.wrap = temp_dest.bounds;
-                    Matter.Body.setPosition(agent.body, temp_dest.get_random_position());
-                    agent.body.frictionAir = temp_dest.friction;
-                }
-            );
-            
-            this.add_event( {
-                time: this.simulation_params.sim_time_per_day, 
-                callback: function() {
-                    temp_agent.location.migrate_to(agent_home, temp_agent, function(agent) {
-                    //update bounds...
-                        agent.body.plugin.wrap = agent_home.bounds;
-                        Matter.Body.setPosition(agent.body, agent_home.get_random_position());
-                        Matter.Body.setVelocity(agent.body, agent.home_state.velocity);
-                        agent.body.frictionAir = agent_home.friction;
-                        agent.migrating = false;
-                    });
-                }
-            });
-
-        }
-    };
-};
 
 const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
     const sim_div = useRef(null);
