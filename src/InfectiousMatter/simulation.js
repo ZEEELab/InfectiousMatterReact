@@ -498,7 +498,7 @@ InfectiousMatter.prototype.add_migration_link = function(location_a, location_b,
     if(existing_edge_ba) {
         existing_edge_ba.data.num_agents = num_agents_per_day_ba;
     } else {
-        this.migration_graph.addLink(location_b.uuid, location_a.uuid, {num_fagents:num_agents_per_day_ba});
+        this.migration_graph.addLink(location_b.uuid, location_a.uuid, {num_agents:num_agents_per_day_ba});
     }
 };
 
