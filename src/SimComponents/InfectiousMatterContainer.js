@@ -24,6 +24,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//This feels hackish, but it's kinda nice
+//agent_a is always a susceptable exposed to an infected (agent_b)
+InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+  if(agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
+      return 0.2;
+  else if (agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
+      return 0.5;
+  else if (!agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
+      return 0.2;
+  else if (!agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
+      return 0.5;
+}
+
 const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'add_residence') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
@@ -43,7 +56,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
         InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED);
       }
     }
-  }
+  } 
   if (action.type == 'add_migration_link') {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
   }

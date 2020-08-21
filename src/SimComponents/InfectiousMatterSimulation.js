@@ -59,11 +59,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         InfectiousMatterRef.current.setup_renderer(sim_div.current);
         InfectiousMatterRef.current.setup_matter_env()        
 
-        //This feels hackish, but it's kinda nice
-        InfectiousMatter.prototype.calc_prob_infection = function(agent_a, agent_b) {
-            console.log("overwritten?");
-            return this.infection_params.per_contact_infection;
-        }
+        
 
         
         let res_prop = {
@@ -101,7 +97,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
 
         let temp_res = InfectiousMatterRef.current.locations[0];
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 200}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'infect_random_agents', payload:{num_agents: 2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'infect_random_agents', payload:{num_agents: 10}});
         
         temp_res = InfectiousMatterRef.current.locations[1];
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: temp_res, num_agents: 100}});

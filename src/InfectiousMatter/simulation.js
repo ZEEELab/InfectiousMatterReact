@@ -250,13 +250,6 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
             break;
         };
 
-    if (org.agent_object.pathogen) {        
-        org.color = this.pathogen_color_range(org.agent_object.pathogen.color_float);
-        org.render.fillStyle = org.color;
-        //stroke_color = "black";
-        
-    }
-
     org.render.strokeStyle = stroke_color;
 
     return org;
@@ -341,19 +334,18 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
     };
 };
 
-InfectiousMatter.prototype.calc_prob_infection = function(agent_a, agent_b) {
-    console.log(this);
+InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
     return this.infection_params.per_contact_infection;
 }
 
-InfectiousMatter.prototype._default_interaction_callback  = function(this_agent) {
+InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_body) {
     return (
         (other_agent) => {
             if ((other_agent.state == AgentStates.S_INFECTED ||
                 other_agent.state == AgentStates.A_INFECTED) && 
-                this_agent.agent_object.state == AgentStates.SUSCEPTIBLE) {
+                this_agent_body.agent_object.state == AgentStates.SUSCEPTIBLE) {
 
-                if (Matter.Common.random(0, 1) < this.calc_prob_infection(this_agent, other_agent)) {
+                if (Matter.Common.random(0, 1) < this.calc_prob_infection(this_agent_body, other_agent.body)) {
                     //we're going to infect this org so 
                     //now we have to pick which state...
                     let future_state;
@@ -362,19 +354,19 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent)
                     } else {
                         future_state = AgentStates.S_INFECTED;
                     }
-                    
-                    this.expose_org(this_agent, future_state, other_agent);
+
+                    this.expose_org(this_agent_body, future_state, other_agent);
                     //this.`post_infection_callback`(this_agent.agent_object, other_agent);
                 }
             }
-            assert(other_agent.uuid && this_agent.agent_object.uuid)
+            assert(other_agent.uuid && this_agent_body.agent_object.uuid)
 
-            var this_edge = ContactGraph.hasLink(this_agent.agent_object.uuid, other_agent.uuid) || ContactGraph.hasLink(other_agent.uuid, this_agent.agent_object.uuid);
+            var this_edge = ContactGraph.hasLink(this_agent_body.agent_object.uuid, other_agent.uuid) || ContactGraph.hasLink(other_agent.uuid, this_agent_body.agent_object.uuid);
             if (this_edge){
                 this_edge.data.timestamp = this.cur_sim_time;
             } else {
-                assert(ContactGraph.hasNode(this_agent.agent_object.uuid) && ContactGraph.hasNode(this_agent.agent_object.uuid));
-                this_edge = ContactGraph.addLink(this_agent.agent_object.uuid, other_agent.uuid, {origin:this_agent.agent_object.uuid, timestamp:this.cur_sim_time});
+                assert(ContactGraph.hasNode(this_agent_body.agent_object.uuid) && ContactGraph.hasNode(this_agent_body.agent_object.uuid));
+                this_edge = ContactGraph.addLink(this_agent_body.agent_object.uuid, other_agent.uuid, {origin:this_agent_body.agent_object.uuid, timestamp:this.cur_sim_time});
             }
 
             this.add_event( {
