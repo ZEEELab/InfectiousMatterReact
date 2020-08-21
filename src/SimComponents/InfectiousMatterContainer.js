@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import { InfectiousMatter} from '../InfectiousMatter/simulation.js';
 import InfectiousMatterSimulation, {AgentStates, ContactGraph} from './InfectiousMatterSimulation.js';
+import InfectiousMatterContactGraph from './InfectiousMatterContactGraph.js';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
@@ -45,11 +46,18 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     return res;
   }
   if (action.type == 'add_agents') {
+    let new_agent = null;
     if (action.payload.residence && action.payload.num_agents) {
       for (let i=0; i< action.payload.num_agents; i++) {
-        InfectiousMatterRef.current.add_agent(action.payload.residence)
+        new_agent = InfectiousMatterRef.current.add_agent(action.payload.residence)
       }
     }
+    if (action.payload.callback && new_agent) {
+      action.payload.callback(new_agent.agent_object); 
+    }
+  }
+  if (action.type == 'forEach_agents') {
+    InfectiousMatterRef.current.agents.forEach( (agent) => action.payload.callback(agent));
   }
   if (action.type == 'infect_random_agents') {
     if(action.payload.num_agents) {
@@ -123,12 +131,15 @@ const InfectiousMatterContainer = (props) => {
         </Grid>
         <Grid item>
         <Card className={classes.paper}>
-          <Typography>Hello</Typography>
+          <InfectiousMatterPlot                 
+            InfectiousMatterRef={InfectiousMatterRef}
+            InfectiousMatterAPI={InfectiousMatterAPI} 
+          />
         </Card>
         </Grid>
         <Grid item>
           <Card className={classes.paper}>
-            <InfectiousMatterPlot                 
+            <InfectiousMatterContactGraph                 
               InfectiousMatterRef={InfectiousMatterRef}
               InfectiousMatterAPI={InfectiousMatterAPI} 
             />

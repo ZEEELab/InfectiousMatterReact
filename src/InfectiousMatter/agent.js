@@ -9,6 +9,7 @@ function Agent(body) {
 	this.body = body;
 	this.interaction_callback = undefined;
 	this.uuid = uniqid();
+	this.viva_color = undefined;
 
 	this.location = undefined;
 	this.home = undefined;

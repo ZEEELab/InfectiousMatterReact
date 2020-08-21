@@ -397,6 +397,8 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.restitution = 1.1;
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
+    new_agent_body.agent_object.viva_color = home_location.viva_node_color
+
     
     home_location.add_agent(new_agent_body.agent_object);
 

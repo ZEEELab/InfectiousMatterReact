@@ -73,7 +73,6 @@ function reducer(state, action) {
   let new_state = [...state];
   switch (action.type) {
     case 'extend': {
-      console.log(action.payload);
       new_state[0].x.push(action.payload.cur_time);
       new_state[0].y.push(action.payload.cur_state_counts[AgentStates.EXPOSED]);
 
