@@ -57,9 +57,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         console.log('here')
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
         InfectiousMatterRef.current.setup_renderer(sim_div.current);
-        InfectiousMatterRef.current.setup_matter_env()        
+        InfectiousMatterRef.current.setup_matter_env();
 
-        
 
         
         let res_prop = {
@@ -105,7 +104,6 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res1, to_location:res2, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2, to_location:res1, num_agents:10}});
-
     })
 
     return (

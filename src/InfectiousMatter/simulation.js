@@ -5,7 +5,6 @@ require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
 Matter.use('matter-wrap', MatterCollisionEvents);
 
-
 Matter._seed = 2;
 Math.random = Matter.Common.random;
 jStat._random_fn = Matter.Common.random;
@@ -38,7 +37,6 @@ let pathogen_colors = colormap({
 
 let interpolate = require('color-interpolate');
 let pathogen_color_range = interpolate(['white']);
-
 
 var AgentStates = {
     SUSCEPTIBLE: 0,
@@ -110,6 +108,8 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
 
     this.matter_engine.world.gravity.y = 0.00;
     this.event_queue = new EventQueue();
+
+
 }
 
 InfectiousMatter.prototype.setup_renderer = function(div_ref) {
@@ -184,6 +184,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
         this.state_counts.push(0);
     }
 
+   
     
     //Engine.run(this.matter_engine);
     //Render.run(this.matter_render);
@@ -203,8 +204,9 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	                this.locations[i].draw_borders(ctx);
                 } 
                 this.agents.forEach( (agent) => {
-                    if(agent.masked)
+                    if(agent.masked){
                         agent.draw_mask(ctx, this.simulation_params.agent_size);
+                    }
                 });
 	        }
 	    });
@@ -218,6 +220,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     let old_state = org.agent_object.state;
     org.agent_object.state = new_state;
+
     if( typeof old_state !== 'undefined') this.state_counts[old_state] -= 1;
     
     this.state_counts[new_state] += 1;
@@ -377,10 +380,7 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_
     );
 };
 
-InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
-    if( typeof agent_state === 'undefined') {
-        agent_state = AgentStates.SUSCEPTIBLE;
-    }
+InfectiousMatter.prototype.add_agent = function(home_location, agent_state=AgentStates.SUSCEPTIBLE) {
 
     assert(home_location && home_location.get_random_position);
 
@@ -397,7 +397,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
     new_agent_body.restitution = 1.1;
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
-
+    
     home_location.add_agent(new_agent_body.agent_object);
 
     new_agent_body.agent_object.register_interaction_callback(this._default_interaction_callback(new_agent_body, this.get_prob_of_infection));
@@ -415,7 +415,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
     World.add(this.matter_engine.world, new_agent_body);
     this.agents.push(new_agent_body.agent_object);
     this.update_org_state(new_agent_body, agent_state);
-
+    
     return(new_agent_body);
 };
 

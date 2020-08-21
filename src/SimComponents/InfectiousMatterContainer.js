@@ -8,6 +8,8 @@ import { InfectiousMatter} from '../InfectiousMatter/simulation.js';
 import InfectiousMatterSimulation, {AgentStates, ContactGraph} from './InfectiousMatterSimulation.js';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
+import Slider from '@material-ui/core/Slider';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,11 +62,45 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'add_migration_link') {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
   }
+  if (action.type == 'set_num_mask') {
+    let num_masked = action.payload.num_masked;
+    // get current num of people masked
+    let masked_list=[];
+    let unmasked_list=[];
+    InfectiousMatterRef.current.agents.forEach( (agent) => {
+      if(agent.masked){
+        masked_list.push(agent);
+      }
+      else{
+        unmasked_list.push(agent);
+      }
+    });
+
+    let cur_num_masked = masked_list.length;
+    if (cur_num_masked < num_masked){
+      for (let i=0; i<num_masked - cur_num_masked; i++){
+        if (i>=unmasked_list.length) break;
+        unmasked_list[i].masked = true;
+      }
+    }
+    else if(cur_num_masked > num_masked){
+      for (let i=0; i<cur_num_masked - num_masked; i++){
+        if (i>=masked_list.length) break;
+        masked_list[i].masked = false;
+      }
+    }
+  }
 };
+
+
 
 const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
+
+  function handleSliderChange(event, newValue){
+    InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: newValue}});
+  }
 
   return (
     <div className="App">
@@ -88,6 +124,18 @@ const InfectiousMatterContainer = (props) => {
           </Card>
         </Grid>
       </Grid>
+      <div style={{width:'300px',margin:'100px'}}>
+        <Slider
+          defaultValue={0}
+          aria-labelledby="discrete-slider"
+          valueLabelDisplay="auto"
+          onChange={handleSliderChange}
+          step={1}
+          marks
+          min={0}
+          max={100}
+        />
+      </div>
     </div>
   )
 }
