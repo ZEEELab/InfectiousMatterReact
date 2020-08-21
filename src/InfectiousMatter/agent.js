@@ -16,7 +16,7 @@ function Agent(body) {
 	this.color = undefined;
 	this.home_state = {};
 	this.migrating = false;
-	this.masked = true;
+	this.masked = false;
 }
 
 Agent.prototype.add_body = function(body) {
