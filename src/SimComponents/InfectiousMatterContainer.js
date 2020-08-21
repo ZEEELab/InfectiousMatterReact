@@ -13,8 +13,8 @@ import Slider from '@material-ui/core/Slider';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-    minWidth:900,
+    flexGrow: 0,
+    minWidth:1200,
   },
   paper: {
     height: 500,
@@ -61,6 +61,9 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   } 
   if (action.type == 'add_migration_link') {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
+  }
+  if (action.type == 'get_state_counts') {
+    return {state_counts: InfectiousMatterRef.current.state_counts, cur_time: InfectiousMatterRef.current.cur_sim_time/ InfectiousMatterRef.current.simulation_params.sim_time_per_day};
   }
   if (action.type == 'set_num_mask') {
     // get current num of people masked
@@ -124,8 +127,11 @@ const InfectiousMatterContainer = (props) => {
         </Card>
         </Grid>
         <Grid item>
-          <Card>
-            <InfectiousMatterPlot />
+          <Card className={classes.paper}>
+            <InfectiousMatterPlot                 
+              InfectiousMatterRef={InfectiousMatterRef}
+              InfectiousMatterAPI={InfectiousMatterAPI} 
+            />
           </Card>
         </Grid>
       </Grid>

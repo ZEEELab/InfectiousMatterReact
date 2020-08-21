@@ -24,7 +24,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         
         let simulation_params = {
             sim_time_per_day: 1000,
-            agent_size: 3,
+            agent_size: 4,
             link_lifetime: 200,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
@@ -45,7 +45,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
             fraction_seek_care: 0.5,
             fraction_isolate: 0.2,
             time_to_seek_care: 2.5,
-            movement_scale: 0.8,
+            movement_scale: 1.0,
         };
   
         let default_simulation_colors = {
@@ -63,15 +63,15 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         
         let res_prop = {
             type: "residence", 
-            friction: 0.02,
+            friction: 0.01,
             bounds: {
                 min: {
                     x: 10,
                     y: 10,
                 },
                 max: {
-                    x: 150,
-                    y: 150,
+                    x: 250,
+                    y: 250,
                 }
             }
         };
@@ -81,12 +81,12 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
             friction: 0.02,
             bounds: {
                 min: {
-                    x: 180,
-                    y: 180,
+                    x: 260,
+                    y: 260,
                 },
                 max: {
-                    x: 320,
-                    y: 320,
+                    x: 450,
+                    y: 450,
                 }
             }
         };
@@ -103,7 +103,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
 
         InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res1, to_location:res2, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2, to_location:res1, num_agents:10}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2, to_location:res1, num_agents:2}});
     })
 
     return (

@@ -225,7 +225,7 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     
     this.state_counts[new_state] += 1;
 
-    org.render.lineWidth = 2;
+    org.render.lineWidth = 3;
     let stroke_color = org.render.strokeStyle;
     let viva_node_color;
 
@@ -254,7 +254,7 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
         };
 
     org.render.strokeStyle = stroke_color;
-
+    
     return org;
     //viva_graphics.getNodeUI(org.agent_object.node.id).color = viva_node_color;
 };
