@@ -63,7 +63,6 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
   }
   if (action.type == 'set_num_mask') {
-    let num_masked = action.payload.num_masked;
     // get current num of people masked
     let masked_list=[];
     let unmasked_list=[];
@@ -77,16 +76,22 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     });
 
     let cur_num_masked = masked_list.length;
-    if (cur_num_masked < num_masked){
-      for (let i=0; i<num_masked - cur_num_masked; i++){
-        if (i>=unmasked_list.length) break;
-        unmasked_list[i].masked = true;
+    let num_needing_masks = action.payload.num_masked - cur_num_masked;
+
+    if (num_needing_masks > 0){
+      for (let i=0; i < num_needing_masks; i++){
+        let agent_to_mask = Matter.Common.choose(unmasked_list);
+        if (agent_to_mask){
+          agent_to_mask.masked = true;
+        }
       }
     }
-    else if(cur_num_masked > num_masked){
-      for (let i=0; i<cur_num_masked - num_masked; i++){
-        if (i>=masked_list.length) break;
-        masked_list[i].masked = false;
+    else if(num_needing_masks < 0){
+      for (let i=0; i< -num_needing_masks; i++){
+        let agent_to_unmask = Matter.Common.choose(masked_list);
+        if (agent_to_unmask) {
+          agent_to_unmask.masked=false;
+        }
       }
     }
   }
@@ -133,7 +138,7 @@ const InfectiousMatterContainer = (props) => {
           step={1}
           marks
           min={0}
-          max={100}
+          max={300}
         />
       </div>
     </div>
