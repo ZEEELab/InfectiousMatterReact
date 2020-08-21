@@ -16,6 +16,7 @@ function Agent(body) {
 	this.color = undefined;
 	this.home_state = {};
 	this.migrating = false;
+	this.masked = false;
 }
 
 Agent.prototype.add_body = function(body) {
@@ -28,6 +29,16 @@ Agent.prototype.register_interaction_callback = function (interaction_callback) 
 
 Agent.prototype.handle_agent_contact = function(other_agent) {
 	this.interaction_callback(other_agent);
+}
+
+Agent.prototype.draw_mask = function(ctx, agent_size) {
+	ctx.fillStyle = "#FFFFFF";
+	ctx.strokeStyle="#000000";
+	ctx.lineWidth = 1;
+	ctx.fillRect(this.body.position.x-agent_size, this.body.position.y, agent_size*2, agent_size-1);
+	ctx.strokeRect(this.body.position.x-agent_size, this.body.position.y, agent_size*2, agent_size-1);
+	ctx.stroke()
+
 }
 
 module.exports = Agent;

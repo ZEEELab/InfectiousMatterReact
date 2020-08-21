@@ -62,7 +62,7 @@ var Events = Matter.Events;
 
 var default_simulation_params = {
     sim_time_per_day:2000,
-    agent_size: 2,
+    agent_size: 3,
     link_lifetime: 4000,
     pathogen_mut_prob: 0.1
 };
@@ -201,7 +201,11 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	            //todo: refactor to callback?
 	            for (let i=0; i< this.locations.length; i++) {
 	                this.locations[i].draw_borders(ctx);
-	            } 
+                } 
+                this.agents.forEach( (agent) => {
+                    if(agent.masked)
+                        agent.draw_mask(ctx, this.simulation_params.agent_size);
+                });
 	        }
 	    });
     }
@@ -337,20 +341,19 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
     };
 };
 
+InfectiousMatter.prototype.calc_prob_infection = function(agent_a, agent_b) {
+    console.log(this);
+    return this.infection_params.per_contact_infection;
+}
+
 InfectiousMatter.prototype._default_interaction_callback  = function(this_agent) {
     return (
         (other_agent) => {
             if ((other_agent.state == AgentStates.S_INFECTED ||
                 other_agent.state == AgentStates.A_INFECTED) && 
                 this_agent.agent_object.state == AgentStates.SUSCEPTIBLE) {
-                let per_contact_infection = this.infection_params.per_contact_infection;
-    
-                //TODO: Check pathogen per_contact_infection overwrite world wide?
-                if (this.infection_params.use_pathogen_contagiousness && other_agent.pathogen) {
-                    per_contact_infection = other_agent.pathogen.contagiousness;
-    
-                }
-                if (Matter.Common.random(0, 1) < per_contact_infection) {
+
+                if (Matter.Common.random(0, 1) < this.calc_prob_infection(this_agent, other_agent)) {
                     //we're going to infect this org so 
                     //now we have to pick which state...
                     let future_state;
@@ -359,10 +362,9 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent)
                     } else {
                         future_state = AgentStates.S_INFECTED;
                     }
-    
-    
+                    
                     this.expose_org(this_agent, future_state, other_agent);
-                    //this.post_infection_callback(this_agent.agent_object, other_agent);
+                    //this.`post_infection_callback`(this_agent.agent_object, other_agent);
                 }
             }
             assert(other_agent.uuid && this_agent.agent_object.uuid)
@@ -391,6 +393,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
     assert(home_location && home_location.get_random_position);
 
     let loc = home_location.get_random_position();
+    //let new_agent_body = 
     let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {plugin: {wrap: home_location.bounds}});
     new_agent_body.render.fillStyle = home_location.home_color || "black";
     new_agent_body.strokeStyle = "black";
@@ -405,7 +408,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state) {
 
     home_location.add_agent(new_agent_body.agent_object);
 
-    new_agent_body.agent_object.register_interaction_callback(this._default_interaction_callback(new_agent_body));
+    new_agent_body.agent_object.register_interaction_callback(this._default_interaction_callback(new_agent_body, this.get_prob_of_infection));
 
 
     new_agent_body.onCollide( (pair) => {
@@ -501,7 +504,6 @@ InfectiousMatter.prototype.add_migration_link = function(from_location, to_locat
 InfectiousMatter.prototype.new_migration_event = function() {
     return () => {
         this.migration_graph.forEachLink((link) => {
-            console.log(link);
             let source = this.location_uuid_hash[link.fromId];
             let dest = this.location_uuid_hash[link.toId];
 
