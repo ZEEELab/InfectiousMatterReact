@@ -63,8 +63,8 @@ let infection_layout = {
       title: "Count",
       rangemode: 'nonnegative'
   },
-  width:500,
-  height:500
+  width:390,
+  height:390
 };
 
 const initial_traces = get_fresh_traces();
@@ -112,7 +112,7 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
   useEffect( () => {
     const interval = setInterval( ()=> {
       update_traces();
-    }, 100);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [])

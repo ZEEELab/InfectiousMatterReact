@@ -42,7 +42,7 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI}
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'forEach_agents', payload:{callback:color_agent}})
     })
     return (
-        <div ref={graph_div} style={{width:500, height:500}} >
+        <div ref={graph_div} style={{width:400, height:400}} >
         </div>
     );
 };

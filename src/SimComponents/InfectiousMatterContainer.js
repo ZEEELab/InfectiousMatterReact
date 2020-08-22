@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
     minWidth:1200,
   },
   paper: {
-    height: 500,
-    width: 500,
+    height: 400,
+    width: 400,
     textAlign: 'center'
   },
   control: {
@@ -41,6 +41,14 @@ InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_
 }
 
 const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
+  if (action.type == 'setup_environment') {
+    InfectiousMatterRef.current.setup_renderer(action.payload.sim_div.current);
+    InfectiousMatterRef.current.setup_matter_env();
+  }
+  if (action.type == 'reset_simulator') {
+    InfectiousMatterRef.current.clear_simulator();
+    InfectiousMatterRef.current.setup_matter_env();
+  }
   if (action.type == 'add_residence') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
     return res;
@@ -123,17 +131,17 @@ const InfectiousMatterContainer = (props) => {
       <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={3}>
         <Grid item>
           <Card className={classes.paper}>
-            <InfectiousMatterSimulation 
-                InfectiousMatterRef={InfectiousMatterRef}
-                InfectiousMatterAPI={InfectiousMatterAPI}
-              />
+          <InfectiousMatterPlot                 
+            InfectiousMatterRef={InfectiousMatterRef}
+            InfectiousMatterAPI={InfectiousMatterAPI} 
+          />
           </Card>
         </Grid>
         <Grid item>
         <Card className={classes.paper}>
-          <InfectiousMatterPlot                 
+          <InfectiousMatterSimulation 
             InfectiousMatterRef={InfectiousMatterRef}
-            InfectiousMatterAPI={InfectiousMatterAPI} 
+            InfectiousMatterAPI={InfectiousMatterAPI}
           />
         </Card>
         </Grid>
@@ -157,6 +165,9 @@ const InfectiousMatterContainer = (props) => {
           min={0}
           max={300}
         />
+
+        <Button variant="contained">Reset</Button>
+
       </div>
     </div>
   )
