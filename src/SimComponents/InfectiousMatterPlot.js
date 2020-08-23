@@ -11,6 +11,7 @@ let get_fresh_traces = function() {
       x: [0],
       y: [0],
       stackgroup: 'one',
+      //type: "scattergl",
       name: "Exposed",
     marker: { color: "orange" }
   };
@@ -19,6 +20,7 @@ let get_fresh_traces = function() {
     x: [0],
     y: [0],
     stackgroup: 'one',
+    //type: "scattergl",
     name: "Infected",
     marker: { color: "red" }
   };
@@ -28,6 +30,7 @@ let get_fresh_traces = function() {
     y: [0],
     stackgroup: 'one',
     name: "Recovered",
+    //type: "scattergl",
     marker: { color: "green" }
   };
 
@@ -36,6 +39,7 @@ let get_fresh_traces = function() {
       y: [0],
       stackgroup: 'one',
       name: "Susceptible",
+      //type: "scattergl",
       marker: { color: "grey" }
   }
   let plot_data = [exposed, infected, recovered, susceptible];
@@ -118,7 +122,7 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_
 
     const interval = setInterval( ()=> {
       update_traces();
-    }, 2000);
+    }, 600);
     return () => { clearInterval(interval);};
   }, [redraw_trigger])
 

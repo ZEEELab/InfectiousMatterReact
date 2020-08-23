@@ -10,12 +10,21 @@ import InfectiousMatterContactGraph from './InfectiousMatterContactGraph.js';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
-
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 0,
-    minWidth:1200,
+    minWidth:1200
+  },
+  controlls: {
+    width:400,
+    padding: theme.spacing(1)
   },
   paper: {
     height: 400,
@@ -214,39 +223,55 @@ const InfectiousMatterContainer = (props) => {
           </Card>
         </Grid>
       </Grid>
-      <div style={{width:'300px',margin:'100px'}}>
-        <Slider
-          value={numMasked}
-          aria-labelledby="discrete-slider"
-          valueLabelDisplay="auto"
-          onChange={handleNumMaskedSliderChange}
-          step={1}
-          min={0}
-          max={300}
-        />
-
-        <Slider
-          value={maskSelfProtection}
-          aria-labelledby="continuous-slider"
-          onChange={handleMaskSelfProtectionChange}
-          valueLabelDisplay="auto"
-          min={0}
-          max={1}
-          step={0.01}
-        />
-        <Slider
-          value={maskOthersProtection}
-          aria-labelledby="continuous-slider"
-          onChange={handleMaskOthersProtectionChange}
-          valueLabelDisplay="auto"
-          min={0}
-          max={1}
-          step={0.01}
-        />
-
-        <Button variant="contained" onClick={resetSimulation}>Reset</Button>
-
-      </div>
+ 
+      <Grid alignItems="center" className={classes.controlls} spacing={3}>
+        <Grid item>
+          <List>
+          <ListSubheader>Settings</ListSubheader>
+          <ListItem>
+            <ListItemText id="Masks" primary="Number Masked" />
+              <Slider
+                value={numMasked}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="on"
+                onChange={handleNumMaskedSliderChange}
+                step={1}
+                min={0}
+                max={300}
+              />
+          </ListItem>
+          <ListItem>
+            <Button variant="contained" onClick={resetSimulation}>Reset</Button>
+          </ListItem>
+          
+          <ListSubheader>Mask Settings</ListSubheader>
+          <ListItem>
+            <ListItemText id="selfProtection" primary="Self Protection" />
+              <Slider
+                value={maskSelfProtection}
+                aria-labelledby="continuous-slider"
+                onChange={handleMaskSelfProtectionChange}
+                valueLabelDisplay="on"
+                min={0}
+                max={1}
+                step={0.01}
+              />
+            </ListItem>
+          <ListItem>
+            <ListItemText id="othersProtection" primary="Others Protection" />
+              <Slider
+                value={maskOthersProtection}
+                aria-labelledby="continuous-slider"
+                onChange={handleMaskOthersProtectionChange}
+                valueLabelDisplay="on"
+                min={0}
+                max={1}
+                step={0.01}
+              />
+          </ListItem>
+        </List>
+      </Grid>
+    </Grid>
     </div>
   )
 }
