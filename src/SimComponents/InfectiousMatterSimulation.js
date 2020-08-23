@@ -108,10 +108,10 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         
         let simulation_params = {
             sim_time_per_day: 1000,
-            agent_size: 3,
+            agent_size: 4,
             link_lifetime: 200,
         };
-        simulation_params.link_lifetime = 14*simulation_params.sim_time_per_day;
+        simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
         
         var infection_params = {
             per_contact_infection: 0.5, 

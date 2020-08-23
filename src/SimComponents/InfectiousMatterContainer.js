@@ -23,8 +23,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth:1200
   },
   controlls: {
-    width:400,
-    padding: theme.spacing(1)
+    width:500,
   },
   paper: {
     height: 400,
@@ -35,16 +34,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }));
-
-const Mask_States = {
-  MASKED_SUSCEPTIBLE: 0,
-  MASKED_A_INFECTED: 1,
-  MASKED_S_INFECTED: 2,
-  UNMASKED_SUSCEPTIBLE: 3,
-  UNMASKED_A_INFECTED: 4,
-  UNMASKED_S_INFECTED: 5,
-  size: 6
-};
 
 InfectiousMatter.prototype.mask_transmission_props = { self_protection:0.05, others_protection:0.5};
 
@@ -68,12 +57,15 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   }
   if (action.type == 'update_mask_transmission_params') {
     if(action.payload.self_protection) {
-      console.log('updating self protection')
       InfectiousMatterRef.current.mask_transmission_props.self_protection = action.payload.self_protection;
     }
     if(action.payload.others_protection) {
-      console.log('updating others protection')
       InfectiousMatterRef.current.mask_transmission_props.others_protection = action.payload.others_protection;
+    }
+  }
+  if (action.type == 'update_movement_scale') {
+    if(action.payload.movement_scale) {
+      InfectiousMatterRef.current.infection_params.movement_scale = action.payload.movement_scale;
     }
   }
   if (action.type == 'reset_simulator') {
@@ -155,6 +147,7 @@ const InfectiousMatterContainer = (props) => {
   const [numMasked, setNumMasked] = useState(0);
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
+  const [movementScale, setMovementScale] = useState(2.0);
   
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [redraw_graph_trigger, setRedrawGraphTrigger] = useState(0);
@@ -170,8 +163,11 @@ const InfectiousMatterContainer = (props) => {
   function handleMaskSelfProtectionChange(event, newValue) {
     setMaskSelfProtection(newValue);
   }
-   function handleMaskOthersProtectionChange(event, newValue) {
+  function handleMaskOthersProtectionChange(event, newValue) {
     setMaskOthersProtection(newValue);
+  }
+  function handleMovementScaleChange(event, newValue) {
+    setMovementScale(newValue);
   }
 
   useEffect( () => {
@@ -185,6 +181,12 @@ const InfectiousMatterContainer = (props) => {
       InfectiousMatterRef, 
       {type: 'update_mask_transmission_params', payload: {others_protection: maskOthersProtection}});
   }, [maskOthersProtection])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef, 
+      {type: 'update_movement_scale', payload: {movement_scale: movementScale}});
+  }, [movementScale])
 
   useEffect( () => {
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: numMasked}});
@@ -224,10 +226,10 @@ const InfectiousMatterContainer = (props) => {
         </Grid>
       </Grid>
  
-      <Grid alignItems="center" className={classes.controlls} spacing={3}>
+      <Grid alignItems="center" className={classes.controlls}>
         <Grid item>
           <List>
-          <ListSubheader>Settings</ListSubheader>
+          <ListSubheader disableSticky={true}>Settings</ListSubheader>
           <ListItem>
             <ListItemText id="Masks" primary="Number Masked" />
               <Slider
@@ -241,12 +243,25 @@ const InfectiousMatterContainer = (props) => {
               />
           </ListItem>
           <ListItem>
+            <ListItemText id="Movement" primary="Movement Scale" />
+            <Slider
+              value={movementScale}
+              aria-labelledby="discrete-slider"
+              valueLabelDisplay="on"
+              onChange={handleMovementScaleChange}
+              step={0.25}
+              min={0}
+              max={5}
+            />
+          </ListItem>
+          <ListItem>
             <Button variant="contained" onClick={resetSimulation}>Reset</Button>
           </ListItem>
+
           
-          <ListSubheader>Mask Settings</ListSubheader>
+          <ListSubheader disableSticky={true}>Mask Settings</ListSubheader>
           <ListItem>
-            <ListItemText id="selfProtection" primary="Self Protection" />
+            <ListItemText id="selfProtection" primary="Self Protection"/>
               <Slider
                 value={maskSelfProtection}
                 aria-labelledby="continuous-slider"
