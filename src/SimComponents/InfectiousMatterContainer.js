@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useReducer, useState} from 'react';
+import React, {useRef, useEffect, useReducer, useState, useLayoutEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -121,6 +121,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
 const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
+  const [numMasked, setNumMasked] = useState(0);
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [redraw_graph_trigger, setRedrawGraphTrigger] = useState(0);
 
@@ -130,8 +131,14 @@ const InfectiousMatterContainer = (props) => {
   }
 
   function handleSliderChange(event, newValue){
-    InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: newValue}});
+    setNumMasked(newValue);
   }
+
+  useEffect( () => {
+    if(InfectiousMatterRef.current){
+      InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: numMasked}});
+    }
+  }, [numMasked]);
 
   return (
     <div className="App">
@@ -152,6 +159,7 @@ const InfectiousMatterContainer = (props) => {
             InfectiousMatterAPI={InfectiousMatterAPI}
             redraw_trigger={redraw_trigger}
             setRedrawGraphTrigger={setRedrawGraphTrigger}
+            numMasked={numMasked}
           />
         </Card>
         </Grid>
@@ -167,7 +175,7 @@ const InfectiousMatterContainer = (props) => {
       </Grid>
       <div style={{width:'300px',margin:'100px'}}>
         <Slider
-          defaultValue={0}
+          value={numMasked}
           aria-labelledby="discrete-slider"
           valueLabelDisplay="auto"
           onChange={handleSliderChange}

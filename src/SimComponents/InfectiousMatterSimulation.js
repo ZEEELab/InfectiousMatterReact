@@ -7,10 +7,10 @@ const Viva = require('vivagraphjs');
 var { InfectiousMatter, AgentStates, ContactGraph } = require('../InfectiousMatter/simulation.js');
 
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setRedrawGraphTrigger}) => {
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setRedrawGraphTrigger, numMasked}) => {
     const sim_div = useRef(null);
 
-    const setup_world = () => {
+    const setup_world = (num_to_mask) => {
         let res_prop = {
             type: "residence", 
             friction: 0.01,
@@ -89,6 +89,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2, to_location:res3, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res3, to_location:res4, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4, to_location:res1, num_agents:2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: num_to_mask}});
+
     };
 
     useEffect(() => {
@@ -141,7 +143,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
         InfectiousMatterAPI(InfectiousMatterRef, {type:'setup_environment', payload:{sim_div:sim_div}});
 
-        setup_world();
+        setup_world(numMasked);
         //InfectiousMatterAPI(InfectiousMatterRef, {type:'reset_simulator'});
         
     }, [])
@@ -149,8 +151,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
     //redraw simulation if we get the triggers
     useLayoutEffect(()=> { 
         if(InfectiousMatterRef.current) {
-            console.log('resetting world')
-            setup_world();
+            setup_world(numMasked);
             setRedrawGraphTrigger( c => c+1);
         }
     }, [redraw_trigger])
