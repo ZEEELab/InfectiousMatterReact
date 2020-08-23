@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useReducer} from 'react';
+import React, {useEffect, useState, useReducer, useLayoutEffect} from 'react';
 import Plot from 'react-plotly.js'; //TODO: use bundles to limit the size of this app
 import {AgentStates} from '../InfectiousMatter/simulation.js';
 import Agent from '../InfectiousMatter/agent.js';
@@ -70,6 +70,7 @@ let infection_layout = {
 const initial_traces = get_fresh_traces();
 
 function reducer(state, action) {
+  if (!state) { console.log('didnt get state');}
   let new_state = [...state];
   switch (action.type) {
     case 'extend': {
@@ -90,32 +91,43 @@ function reducer(state, action) {
       // new_state[3].push(action.payload.state_counts[AgentStates.SUSCEPTIBLE]);
       return new_state;
     }
+    case 'reset': {
+        new_state = get_fresh_traces();
+        return new_state;
+    }
     default: {
 
     }
   }
 }
 
-const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
+const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger}) => {
 
   const [plotTraces, dispatchTraces] = useReducer(reducer, initial_traces);
   const [plotRevision, setPlotRevision] = useState(0);
   let plot_data = get_fresh_traces();
   let plot_layout = infection_layout;
 
-  const update_traces = () => {
-    let api_return = InfectiousMatterAPI(InfectiousMatterRef, {type:'get_state_counts'});
-    dispatchTraces({type: 'extend', payload:{cur_time: api_return.cur_time, cur_state_counts: api_return.state_counts}});
-    setPlotRevision(p => p+1);
-  };
-
   useEffect( () => {
+    const update_traces = () => {
+        let api_return = InfectiousMatterAPI(InfectiousMatterRef, {type:'get_state_counts'});
+        dispatchTraces({type: 'extend', payload:{cur_time: api_return.cur_time, cur_state_counts: api_return.state_counts}});
+        setPlotRevision(p => p+1);
+      };
+
     const interval = setInterval( ()=> {
       update_traces();
     }, 500);
+    return () => { clearInterval(interval);};
+  }, [redraw_trigger])
 
-    return () => clearInterval(interval);
-  }, [])
+  //redraw plot if we get the triggers
+  useLayoutEffect(()=> { 
+    if(InfectiousMatterRef.current) {
+        dispatchTraces({type:'reset'});
+        setPlotRevision(p => p+1);
+    }
+  }, [redraw_trigger])
 
   return (
     <Plot

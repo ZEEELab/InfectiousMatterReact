@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 
@@ -7,7 +7,7 @@ const Viva = require('vivagraphjs');
 var { InfectiousMatter, AgentStates, ContactGraph } = require('../InfectiousMatter/simulation.js');
 
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setRedrawGraphTrigger}) => {
     const sim_div = useRef(null);
 
     const setup_world = () => {
@@ -89,12 +89,6 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2, to_location:res3, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res3, to_location:res4, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4, to_location:res1, num_agents:2}});
-
-    };
-
-    function reset_simulation() {
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'reset_simulator'});
-        setup_world();
     };
 
     useEffect(() => {
@@ -142,14 +136,24 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI}) 
         }
 
         
-        console.log('here')
+        console.log('initalizing matter')
 
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
         InfectiousMatterAPI(InfectiousMatterRef, {type:'setup_environment', payload:{sim_div:sim_div}});
 
         setup_world();
         //InfectiousMatterAPI(InfectiousMatterRef, {type:'reset_simulator'});
-    })
+        
+    }, [])
+
+    //redraw simulation if we get the triggers
+    useLayoutEffect(()=> { 
+        if(InfectiousMatterRef.current) {
+            console.log('resetting world')
+            setup_world();
+            setRedrawGraphTrigger( c => c+1);
+        }
+    }, [redraw_trigger])
 
     return (
         <div>

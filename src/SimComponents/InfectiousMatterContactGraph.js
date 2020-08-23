@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useReducer, useRef} from 'react';
+import React, {useEffect, useState, useReducer, useRef, useLayoutEffect} from 'react';
 import {AgentStates, ContactGraph} from '../InfectiousMatter/simulation.js';
 import Agent from '../InfectiousMatter/agent.js';
 import Button from '@material-ui/core/Button';
@@ -15,10 +15,11 @@ let viva_layout = Viva.Graph.Layout.forceDirected(ContactGraph, {
 let viva_graphics = Viva.Graph.View.webglGraphics();
 
 
-const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI}) => {
+const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_graph_trigger}) => {
     const graph_div = useRef(null);
 
     useEffect( ()=> {
+        console.log("initalizing viva graph");
         let viva_renderer = Viva.Graph.View.renderer(ContactGraph, {
             container: graph_div.current,
             graphics: viva_graphics,
@@ -31,7 +32,7 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI}
         for (let i=0; i < 30; i++) {
             viva_renderer.zoomOut();
         }
-    });
+    }, []);
 
     useEffect ( () => {
         const color_agent = (agent) => {
@@ -40,7 +41,8 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI}
         }
 
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'forEach_agents', payload:{callback:color_agent}})
-    })
+    }, [redraw_graph_trigger])
+
     return (
         <div ref={graph_div} style={{width:400, height:400}} >
         </div>

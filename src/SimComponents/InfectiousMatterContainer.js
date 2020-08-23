@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useReducer} from 'react';
+import React, {useRef, useEffect, useReducer, useState} from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -121,6 +121,13 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
 const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
+  const [redraw_trigger, setRedrawTrigger] = useState(0);
+  const [redraw_graph_trigger, setRedrawGraphTrigger] = useState(0);
+
+  const resetSimulation = (e) => {
+    InfectiousMatterAPI(InfectiousMatterRef, {type: 'reset_simulator'});
+    setRedrawTrigger(c=>c+1);
+  }
 
   function handleSliderChange(event, newValue){
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: newValue}});
@@ -133,7 +140,8 @@ const InfectiousMatterContainer = (props) => {
           <Card className={classes.paper}>
           <InfectiousMatterPlot                 
             InfectiousMatterRef={InfectiousMatterRef}
-            InfectiousMatterAPI={InfectiousMatterAPI} 
+            InfectiousMatterAPI={InfectiousMatterAPI}
+            redraw_trigger={redraw_trigger}
           />
           </Card>
         </Grid>
@@ -142,6 +150,8 @@ const InfectiousMatterContainer = (props) => {
           <InfectiousMatterSimulation 
             InfectiousMatterRef={InfectiousMatterRef}
             InfectiousMatterAPI={InfectiousMatterAPI}
+            redraw_trigger={redraw_trigger}
+            setRedrawGraphTrigger={setRedrawGraphTrigger}
           />
         </Card>
         </Grid>
@@ -150,6 +160,7 @@ const InfectiousMatterContainer = (props) => {
             <InfectiousMatterContactGraph                 
               InfectiousMatterRef={InfectiousMatterRef}
               InfectiousMatterAPI={InfectiousMatterAPI} 
+              redraw_graph_trigger={redraw_graph_trigger}
             />
           </Card>
         </Grid>
@@ -166,7 +177,7 @@ const InfectiousMatterContainer = (props) => {
           max={300}
         />
 
-        <Button variant="contained">Reset</Button>
+        <Button variant="contained" onClick={resetSimulation}>Reset</Button>
 
       </div>
     </div>
