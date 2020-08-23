@@ -199,7 +199,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	        let ctx = this.matter_render.context;
 	        
 	        if(ctx) {
-	            //todo: refactor to callback?
+	            //todo: refactor to callback
 	            for (let i=0; i< this.locations.length; i++) {
 	                this.locations[i].draw_borders(ctx);
                 } 
@@ -435,20 +435,6 @@ InfectiousMatter.prototype.clear_simulator = function() {
     World.clear(this.matter_engine.world);
     Engine.clear(this.matter_engine);
     this.event_queue.clear_events();
-    //this.matter_engine.events = {};
-
-    /*
-    this.matter_render.canvas.remove();
-    this.matter_render.canvas = null;
-    this.matter_render.context = null;
-    this.matter_render.textures = {};
-
-    this.matter_world = null;
-    this.matter_engine = null;
-    this.event_queue = null;
-    this.matter_render = null;
-    this.mouseConstraint = null;
-    */
 }
 
 InfectiousMatter.prototype.remove_simulator = function() {

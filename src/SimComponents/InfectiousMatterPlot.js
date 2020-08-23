@@ -4,6 +4,7 @@ import {AgentStates} from '../InfectiousMatter/simulation.js';
 import Agent from '../InfectiousMatter/agent.js';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
 
 let get_fresh_traces = function() {
   let exposed = {
@@ -34,7 +35,7 @@ let get_fresh_traces = function() {
       x: [0],
       y: [0],
       stackgroup: 'one',
-      name: "Susceptable",
+      name: "Susceptible",
       marker: { color: "grey" }
   }
   let plot_data = [exposed, infected, recovered, susceptible];
@@ -117,7 +118,7 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_
 
     const interval = setInterval( ()=> {
       update_traces();
-    }, 500);
+    }, 2000);
     return () => { clearInterval(interval);};
   }, [redraw_trigger])
 
@@ -133,7 +134,7 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_
     <Plot
       data={plotTraces}
       layout={{...plot_layout, datarevision:plotRevision}}
-    />   
+    />
   );
 };
 
