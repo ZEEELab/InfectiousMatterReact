@@ -1,10 +1,6 @@
 import React, {useEffect, useState, useReducer, useLayoutEffect} from 'react';
 import Plot from 'react-plotly.js'; //TODO: use bundles to limit the size of this app
 import {AgentStates} from '../InfectiousMatter/simulation.js';
-import Agent from '../InfectiousMatter/agent.js';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
 
 let get_fresh_traces = function() {
   let exposed = {

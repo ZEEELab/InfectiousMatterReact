@@ -1,5 +1,6 @@
 import { jStat } from 'jstat';
 import Pathogen from './pathogen.js';
+import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -468,6 +469,13 @@ InfectiousMatter.prototype.pulse_orgs_event = function() {
     };
 };
 
+InfectiousMatter.prototype.get_migration_links = function() {
+    let to_return = []
+    this.migration_graph.forEachLink(function(link) {
+        to_return.push({from_uuid:link.fromId, to_uuid:link.toId, num_agents:link.data.num_agents});
+    });
+    return to_return;
+}
 InfectiousMatter.prototype.add_migration_link = function(from_location, to_location, num_agents_per_day) {
     //add object to migration_links container that tells us how often migrations should occur
     var existing_edge = this.migration_graph.hasLink(from_location.uuid, to_location.uuid);

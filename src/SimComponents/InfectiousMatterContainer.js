@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { InfectiousMatter} from '../InfectiousMatter/simulation.js';
 import InfectiousMatterSimulation, {AgentStates, ContactGraph} from './InfectiousMatterSimulation.js';
 import InfectiousMatterContactGraph from './InfectiousMatterContactGraph.js';
+import InfectiousMatterMigrationTable from './InfectiousMatterMigrationTable';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
@@ -15,7 +16,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import Switch from '@material-ui/core/Switch';
+import MaterialTable from 'material-table';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,10 +30,7 @@ const useStyles = makeStyles((theme) => ({
     height: 400,
     width: 400,
     textAlign: 'center'
-  },
-  control: {
-    padding: theme.spacing(2),
-  },
+  }
 }));
 
 InfectiousMatter.prototype.mask_transmission_props = { self_protection:0.05, others_protection:0.5};
@@ -72,7 +70,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     InfectiousMatterRef.current.clear_simulator();
     InfectiousMatterRef.current.setup_matter_env();
   }
-  if (action.type == 'add_residence') {
+  if (action.type == 'add_location') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
     return res;
   }
@@ -87,8 +85,17 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
       action.payload.callback(new_agent.agent_object); 
     }
   }
+  if (action.type == 'map_agents') {
+    return InfectiousMatterRef.current.agents.map( (agent, agent_id) => action.payload.callback(agent, agent_id));
+  }
   if (action.type == 'forEach_agents') {
     InfectiousMatterRef.current.agents.forEach( (agent) => action.payload.callback(agent));
+  }
+  if (action.type == 'map_locations') {
+    return InfectiousMatterRef.current.locations.map( (loc, loc_idx) => action.payload.callback(loc, loc_idx));
+  }
+  if (action.type == 'forEach_location') {
+    InfectiousMatterRef.current.locations.forEach( (loc) => action.payload.callback(loc));
   }
   if (action.type == 'infect_random_agents') {
     if(action.payload.num_agents) {
@@ -98,6 +105,9 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
       }
     }
   } 
+  if (action.type == 'get_migration_links') {
+    return InfectiousMatterRef.current.get_migration_links();
+  }
   if (action.type == 'add_migration_link') {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
   }
@@ -225,9 +235,9 @@ const InfectiousMatterContainer = (props) => {
           </Card>
         </Grid>
       </Grid>
- 
-      <Grid alignItems="center" className={classes.controlls}>
-        <Grid item>
+
+      <Grid container direction="row" alignItems="center" className={classes.root} spacing={3}>
+        <Grid item className={classes.controlls}>
           <List>
           <ListSubheader disableSticky={true}>Settings</ListSubheader>
           <ListItem>
@@ -251,7 +261,7 @@ const InfectiousMatterContainer = (props) => {
               onChange={handleMovementScaleChange}
               step={0.25}
               min={0}
-              max={5}
+              max={10}
             />
           </ListItem>
           <ListItem>
@@ -285,6 +295,13 @@ const InfectiousMatterContainer = (props) => {
               />
           </ListItem>
         </List>
+      </Grid>
+      <Grid item>
+        <InfectiousMatterMigrationTable             
+          InfectiousMatterRef={InfectiousMatterRef}
+          InfectiousMatterAPI={InfectiousMatterAPI}
+          redraw_trigger={redraw_trigger}
+/>
       </Grid>
     </Grid>
     </div>

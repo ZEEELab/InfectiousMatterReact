@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-
+import {InfectiousMatter, AgentStates, ContactGraph} from '../InfectiousMatter/simulation.js';
 const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
-var { InfectiousMatter, AgentStates, ContactGraph } = require('../InfectiousMatter/simulation.js');
 
 
 const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setRedrawGraphTrigger, numMasked}) => {
@@ -72,10 +71,10 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         };
 
 
-        let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop}});
-        let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop2}});
-        let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop3}});
-        let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_residence', payload:{residence_props: res_prop4}});
+        let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop}});
+        let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop2}});
+        let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop3}});
+        let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop4}});
 
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 100}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 100}});
