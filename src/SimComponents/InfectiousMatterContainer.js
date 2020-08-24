@@ -160,7 +160,7 @@ const InfectiousMatterContainer = (props) => {
   const [movementScale, setMovementScale] = useState(2.0);
   
   const [redraw_trigger, setRedrawTrigger] = useState(0);
-  const [redraw_graph_trigger, setRedrawGraphTrigger] = useState(0);
+  const [worldReadyTrigger, setWorldReadyTrigger] = useState(0);
 
   const resetSimulation = (e) => {
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'reset_simulator'});
@@ -220,7 +220,7 @@ const InfectiousMatterContainer = (props) => {
             InfectiousMatterRef={InfectiousMatterRef}
             InfectiousMatterAPI={InfectiousMatterAPI}
             redraw_trigger={redraw_trigger}
-            setRedrawGraphTrigger={setRedrawGraphTrigger}
+            setWorldReadyTrigger={setWorldReadyTrigger}
             numMasked={numMasked}
           />
         </Card>
@@ -230,7 +230,7 @@ const InfectiousMatterContainer = (props) => {
             <InfectiousMatterContactGraph                 
               InfectiousMatterRef={InfectiousMatterRef}
               InfectiousMatterAPI={InfectiousMatterAPI} 
-              redraw_graph_trigger={redraw_graph_trigger}
+              worldReadyTrigger={worldReadyTrigger}
             />
           </Card>
         </Grid>
@@ -300,8 +300,8 @@ const InfectiousMatterContainer = (props) => {
         <InfectiousMatterMigrationTable             
           InfectiousMatterRef={InfectiousMatterRef}
           InfectiousMatterAPI={InfectiousMatterAPI}
-          redraw_trigger={redraw_trigger}
-/>
+          worldReadyTrigger={worldReadyTrigger}
+        />
       </Grid>
     </Grid>
     </div>

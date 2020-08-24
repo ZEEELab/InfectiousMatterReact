@@ -3,24 +3,28 @@ import MaterialTable from 'material-table';
 import { InfectiousMatter } from '../InfectiousMatter/simulation';
 
 
-const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger}) => {
+const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAPI, worldReadyTrigger}) => {
     const [locations, setLocations] = useState([]);
     const [locationIdMap, setlocationIdMap] = useState({});
+    const [migrationRevision, setMigrationRevision] = useState(0);
 
     const [columns, setColumns] = useState([
-        {field:"from_uuid", hidden:true},
-        {field:"to_uuid", hidden:true},
-        {title:"From Location", field:"from_idx"},
-        {title:"To Location", field:"to_idx"},
-        {title:"Visitors/Day", field:"num_agents"}
+        {title:"From Location", field:"from_uuid", type: "numeric"},
+        {title:"To Location", field:"to_uuid", type: "numeric"},
+        {title:"Visitors/Day", field:"num_agents", type: "numeric"}
     ]);
 
     const [migrationLinks, setMigrationLinks] = useState([]);
 
-
+    const link_diff = (new_link, old_link) => {
+        return (
+            new_link.to_uuid != old_link.to_uuid ||
+            new_link.from_uuid != old_link.from_uuid ||
+            new_link.num_agents != old_link.num_agents
+            )
+    }
     const update_migration_links = function(new_link_data, old_link_data) {
         //setMigrationLinks(new_links);
-        console.dir(new_link_data);
         let new_migration_links = [...migrationLinks];
         let update_idx = migrationLinks.findIndex( (entry) => {
             return (
@@ -28,14 +32,42 @@ const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAP
                 entry.from_uuid == old_link_data.from_uuid
             )
         });
-        new_migration_links[update_idx] = new_link_data;
-        console.dir(new_migration_links);
-        setMigrationLinks(new_migration_links);
+        if (link_diff(new_link_data, old_link_data)){
+            new_migration_links[update_idx] = new_link_data;
+            console.dir(new_migration_links);
+            setMigrationLinks(new_migration_links);
+            setMigrationRevision(c => c+1);
+        }
     }
 
     useEffect( () => {
-        console.log('should update api');
-    }, [migrationLinks])
+        setColumns([
+            {title:"From Location", field:"from_uuid", type: "numeric", lookup:locationIdMap},
+            {title:"To Location", field:"to_uuid", type: "numeric", lookup:locationIdMap},
+            {title:"Visitors/Day", field:"num_agents", type: "numeric"},
+        ]);
+    }, [locationIdMap]) 
+    
+    useEffect( () => {
+        //don't run the first time when we don't have the migration list yet
+        if(migrationLinks.length > 0){
+            console.log('gotta update migration!')
+            migrationLinks.forEach( (migration_link) => {
+                console.dir(migration_link);
+
+                InfectiousMatterAPI(
+                    InfectiousMatterRef,
+                    {
+                        type:'add_migration_link', 
+                        payload:{
+                            from_location: migration_link.from_uuid, 
+                            to_location: migration_link.to_uuid,
+                            num_agents: migration_link.num_agents
+                        }
+                    });
+            })
+        }
+    }, [migrationRevision])
 
     useEffect( () => {
         let location_list = InfectiousMatterAPI(InfectiousMatterRef, {
@@ -47,7 +79,10 @@ const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAP
             }
         });
         setLocations(location_list);
-    }, [])
+        let raw_migration_links = InfectiousMatterAPI(InfectiousMatterRef, {type:'get_migration_links'});
+        setMigrationLinks(raw_migration_links);
+
+    }, [worldReadyTrigger])
 
     useEffect( () => {
         let location_map = {}
@@ -56,17 +91,6 @@ const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAP
         });
 
         setlocationIdMap(location_map);
-
-        let raw_migration_links = InfectiousMatterAPI(InfectiousMatterRef, {type:'get_migration_links'});
-        let adjusted_links = raw_migration_links.map((migration_link) => {
-            return {
-                ...migration_link, 
-                from_idx: location_map[migration_link.from_uuid], 
-                to_idx: location_map[migration_link.to_uuid]
-            }
-        })
-
-        setMigrationLinks(adjusted_links);
 
     }, [locations]);
 
@@ -79,7 +103,6 @@ const InfectiousMatterMigrationTable = ({InfectiousMatterRef, InfectiousMatterAP
             onRowUpdate: (new_data, old_data) => {
                 return new Promise( (resolve, reject) => {
                     update_migration_links(new_data, old_data);
-
                     resolve();
                 });
             }, 

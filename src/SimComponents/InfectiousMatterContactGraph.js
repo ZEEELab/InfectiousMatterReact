@@ -15,7 +15,7 @@ let viva_layout = Viva.Graph.Layout.forceDirected(ContactGraph, {
 let viva_graphics = Viva.Graph.View.webglGraphics();
 
 
-const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_graph_trigger}) => {
+const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI, worldReadyTrigger}) => {
     const graph_div = useRef(null);
 
     useEffect( ()=> {
@@ -41,7 +41,7 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI,
         }
 
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'forEach_agents', payload:{callback:color_agent}})
-    }, [redraw_graph_trigger])
+    }, [worldReadyTrigger])
 
     return (
         <div ref={graph_div} style={{width:400, height:400}} >

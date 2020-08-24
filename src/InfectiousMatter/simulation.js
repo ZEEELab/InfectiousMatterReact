@@ -476,14 +476,13 @@ InfectiousMatter.prototype.get_migration_links = function() {
     });
     return to_return;
 }
-InfectiousMatter.prototype.add_migration_link = function(from_location, to_location, num_agents_per_day) {
-    //add object to migration_links container that tells us how often migrations should occur
-    var existing_edge = this.migration_graph.hasLink(from_location.uuid, to_location.uuid);
-
+InfectiousMatter.prototype.add_migration_link = function(from_location_uuid, to_location_uuid, num_agents_per_day) {
+    var existing_edge = this.migration_graph.hasLink(from_location_uuid, to_location_uuid);
+    console.dir(existing_edge);
     if(existing_edge) {
         existing_edge.data.num_agents = num_agents_per_day;
     } else {
-        this.migration_graph.addLink(from_location.uuid, to_location.uuid, {num_agents:num_agents_per_day});
+        this.migration_graph.addLink(from_location_uuid, to_location_uuid, {num_agents:num_agents_per_day});
     }
 };
 
@@ -507,6 +506,7 @@ InfectiousMatter.prototype.new_migration_event = function() {
                     agent.body.plugin.wrap = dest.bounds;
                     Matter.Body.setPosition(agent.body, dest.get_random_position());
                     agent.body.frictionAir = dest.friction;
+                    agent.migrating = true;
                 });
 
                 this.add_event( {
