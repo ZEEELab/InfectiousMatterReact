@@ -80,8 +80,6 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 100}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: 100}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: 100}});
-
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'infect_random_agents', payload:{num_agents: 3}});
         
         InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         

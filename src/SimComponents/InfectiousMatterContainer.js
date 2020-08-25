@@ -188,6 +188,16 @@ const InfectiousMatterContainer = (props) => {
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'reset_simulator'});
     setRedrawTrigger(c=>c+1);
   }
+  const infectAgent = (e) => {
+    InfectiousMatterAPI(
+      InfectiousMatterRef, 
+      {
+        type: 'infect_random_agents', 
+        payload: {
+          num_agents: 1
+        }
+      });
+  }
 
   function handleNumMaskedSliderChange(event, newValue){
     setNumMasked(newValue);
@@ -288,8 +298,17 @@ const InfectiousMatterContainer = (props) => {
             />
           </ListItem>
           <ListItem>
-            <Button variant="contained" onClick={resetSimulation}>Reset</Button>
-          </ListItem>
+            <Grid container direction="row" spacing={3}>
+              <Grid item>
+                <Button variant="contained" onClick={resetSimulation}>Reset</Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" onClick={infectAgent}>
+                  Infect Random Agent
+                </Button>
+              </Grid>
+            </Grid>
+          </ListItem>          
 
           
           <ListSubheader disableSticky={true}>Mask Settings</ListSubheader>
