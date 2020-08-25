@@ -109,6 +109,7 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
 
     this.matter_engine.world.gravity.y = 0.00;
     this.event_queue = new EventQueue();
+    this.migration_graph = new _Viva.Graph.graph()
 
 
 }
@@ -172,7 +173,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
     ContactGraph.clear();
     this.locations = [];
     
-    this.migration_graph = new _Viva.Graph.graph()
+    this.migration_graph.clear();
     this.location_uuid_hash = {};
 
     this.agents = [];
@@ -478,14 +479,18 @@ InfectiousMatter.prototype.get_migration_links = function() {
 }
 InfectiousMatter.prototype.add_migration_link = function(from_location_uuid, to_location_uuid, num_agents_per_day) {
     var existing_edge = this.migration_graph.hasLink(from_location_uuid, to_location_uuid);
-    console.dir(existing_edge);
     if(existing_edge) {
         existing_edge.data.num_agents = num_agents_per_day;
     } else {
         this.migration_graph.addLink(from_location_uuid, to_location_uuid, {num_agents:num_agents_per_day});
     }
 };
-
+InfectiousMatter.prototype.remove_migration_link = function(from_location_uuid, to_location_uuid) {
+    var existing_edge = this.migration_graph.hasLink(from_location_uuid, to_location_uuid);
+    if (existing_edge) {
+        this.migration_graph.removeLink(existing_edge);
+    }
+};
 
 
 InfectiousMatter.prototype.new_migration_event = function() {

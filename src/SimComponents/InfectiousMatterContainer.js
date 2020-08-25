@@ -24,12 +24,18 @@ const useStyles = makeStyles((theme) => ({
     minWidth:1200
   },
   controlls: {
-    width:500,
+    width:600,
   },
   paper: {
-    height: 400,
-    width: 400,
-    textAlign: 'center'
+    minHeight: 400,
+    minWidth: 400,
+    textAlign: 'center',
+  },
+  paperControlls: {
+    minHeight: 400,
+    minWidth: 400,
+    textAlign: 'center',
+    padding: theme.spacing(2)
   }
 }));
 
@@ -110,6 +116,12 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   }
   if (action.type == 'add_migration_link') {
     InfectiousMatterRef.current.add_migration_link(action.payload.from_location, action.payload.to_location, action.payload.num_agents)
+  }
+  if (action.type == 'clear_migration_links') {
+    InfectiousMatterRef.current.migration_graph.clear();
+  }
+  if (action.type == 'remove_migration_link') {
+    InfectiousMatterRef.current.remove_migration_link(action.payload.from_location, action.payload.to_location)
   }
   if (action.type == 'get_state_counts') {
     return {state_counts: InfectiousMatterRef.current.state_counts, cur_time: InfectiousMatterRef.current.cur_sim_time/ InfectiousMatterRef.current.simulation_params.sim_time_per_day};
@@ -236,8 +248,9 @@ const InfectiousMatterContainer = (props) => {
         </Grid>
       </Grid>
 
-      <Grid container direction="row" alignItems="center" className={classes.root} spacing={3}>
-        <Grid item className={classes.controlls}>
+      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
+        <Grid item alignItems="flex-start">
+        <Card className={classes.paper}>
           <List>
           <ListSubheader disableSticky={true}>Settings</ListSubheader>
           <ListItem>
@@ -295,8 +308,10 @@ const InfectiousMatterContainer = (props) => {
               />
           </ListItem>
         </List>
-      </Grid>
-      <Grid item>
+      </Card>
+        </Grid>
+        
+      <Grid item className={classes.controlls}>
         <InfectiousMatterMigrationTable             
           InfectiousMatterRef={InfectiousMatterRef}
           InfectiousMatterAPI={InfectiousMatterAPI}
