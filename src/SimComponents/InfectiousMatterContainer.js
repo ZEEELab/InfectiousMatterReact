@@ -141,23 +141,33 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
 
     let cur_num_masked = masked_list.length;
     let num_needing_masks = action.payload.num_masked - cur_num_masked;
-
+    if (num_needing_masks > 0) {
+      for(let i=0; i< num_needing_masks; i++) {
+        unmasked_list[i].masked = true;
+      }
+    } else if (num_needing_masks < 0) {
+      for(let i=0; i<-num_needing_masks; i++) {
+        masked_list[i].masked = false;
+      }
+    }
+    /*
     if (num_needing_masks > 0){
       for (let i=0; i < num_needing_masks; i++){
         let agent_to_mask = Matter.Common.choose(unmasked_list);
-        if (agent_to_mask){
+        if (agent_to_mask.masked == false){
           agent_to_mask.masked = true;
         }
       }
     }
     else if(num_needing_masks < 0){
-      for (let i=0; i< -num_needing_masks; i++){
+      for (let i=0; i < -num_needing_masks; i++){
         let agent_to_unmask = Matter.Common.choose(masked_list);
         if (agent_to_unmask) {
           agent_to_unmask.masked=false;
         }
       }
     }
+    */
   }
 };
 
@@ -252,7 +262,7 @@ const InfectiousMatterContainer = (props) => {
         <Grid item alignItems="flex-start">
         <Card className={classes.paper}>
           <List>
-          <ListSubheader disableSticky={true}>Settings</ListSubheader>
+          <ListSubheader disableSticky={true}>World Settings</ListSubheader>
           <ListItem>
             <ListItemText id="Masks" primary="Number Masked" />
               <Slider
@@ -262,7 +272,7 @@ const InfectiousMatterContainer = (props) => {
                 onChange={handleNumMaskedSliderChange}
                 step={1}
                 min={0}
-                max={300}
+                max={400}
               />
           </ListItem>
           <ListItem>
