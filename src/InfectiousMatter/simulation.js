@@ -372,12 +372,12 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_
             } else {
                 assert(ContactGraph.hasNode(this_agent_body.agent_object.uuid) && ContactGraph.hasNode(this_agent_body.agent_object.uuid));
                 this_edge = ContactGraph.addLink(this_agent_body.agent_object.uuid, other_agent.uuid, {origin:this_agent_body.agent_object.uuid, timestamp:this.cur_sim_time});
+                this.add_event( {
+                    time: this.simulation_params.link_lifetime+1, 
+                    callback: this._check_edge_for_removal(this_edge)
+                });
             }
 
-            this.add_event( {
-                time: this.simulation_params.link_lifetime+1, 
-                callback: this._check_edge_for_removal(this_edge)
-            });
         }
     );
 };
