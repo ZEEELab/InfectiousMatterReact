@@ -41,11 +41,9 @@ let pathogen_color_range = interpolate(['white']);
 
 var AgentStates = {
     SUSCEPTIBLE: 0,
-    EXPOSED: 1,
-    A_INFECTED: 2,
-    S_INFECTED: 3,
-    RECOVERED: 4,
-    size: 5
+    INFECTED: 1
+    RECOVERED: 2,
+    size: 3
 };
 
 var Engine = Matter.Engine;
@@ -234,23 +232,16 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     //todo: refactor to callback?
     //refactor to event!
     switch(new_state) {
-        case AgentStates.EXPOSED:
-            stroke_color = "orange";
-            break;
-        case AgentStates.S_INFECTED:
+        case AgentStates.INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
-            break;
-        case AgentStates.A_INFECTED:
-            stroke_color = "red";
-            viva_node_color = 0xFF0000ff;
-
             break;
         case AgentStates.RECOVERED:
             stroke_color = "blue";
             viva_node_color = 0xFFFFFFff;
             break;
         case AgentStates.SENSITIVE:
+            stroke_color = "black";
             org.render.lineWidth = 0;
             break;
         };
@@ -292,7 +283,7 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     } else {
         org.agent_object.pathogen = new Pathogen(0.5, 'root');
     }
-    this.update_org_state(org, AgentStates.EXPOSED);
+    this.update_org_state(org, AgentStates.INFECTED);
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
 
@@ -382,7 +373,7 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_
     );
 };
 
-InfectiousMatter.prototype.add_agent = function(home_location, agent_state=AgentStates.SUSCEPTIBLE) {
+tiousMatter.prototype.add_agent = function(home_location, agent_state=AgentStates.SUSCEPTIBLE) {
 
     assert(home_location && home_location.get_random_position);
 
