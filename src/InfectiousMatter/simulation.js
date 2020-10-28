@@ -287,8 +287,7 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     this.update_org_state(org, AgentStates.INFECTED);
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
-    let days_to_recover = Math.max(jStat.normal.sample(this.infection_params.infectious_period_mu, this.infection_params.infectious_period_sigma), 4);
-
+    let days_to_recover = Math.max(jStat.exponential.sample(1/this.infection_params.infectious_period_mu), 3);
     this.add_event( {
         time: days_to_recover*this.simulation_params.sim_time_per_day,
         callback: () => {
@@ -389,6 +388,19 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     
     return(new_agent_body);
 };
+
+InfectiousMatter.prototype.delete_agent = function(an_agent) {
+
+    this.agents = this.agents.filter(function(a) {
+		return (a !== an_agent)
+    });
+
+    Matter.Composite.remove(this.matter_engine.world, an_agent.body);
+    ContactGraph.removeNode(an_agent.uuid);
+
+    this.state_counts[an_agent.state] -= 1;
+    //TODO: Clear events associated with this agent?
+}
 
 InfectiousMatter.prototype.add_event = function (q_item) {
     assert(q_item.time && q_item.callback);

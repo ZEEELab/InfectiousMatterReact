@@ -6,7 +6,7 @@ const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
 
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, numMasked}) => {
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, numMasked, popSize}) => {
     const sim_div = useRef(null);
 
     const setup_world = (num_to_mask) => {
@@ -19,75 +19,19 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
                     y: 10,
                 },
                 max: {
-                    x: 190,
-                    y: 190,
-                }
-            }
-        };
-
-        let res_prop2 = {
-            type: "residence", 
-            friction: 0.02,
-            bounds: {
-                min: {
-                    x: 10,
-                    y: 210,
-                },
-                max: {
-                    x: 190,
-                    y: 390,
-                }
-            }
-        };
-
-        let res_prop3 = {
-            type: "residence", 
-            friction: 0.02,
-            bounds: {
-                min: {
-                    x: 210,
-                    y: 10,
-                },
-                max: {
-                    x: 390,
-                    y: 190,
-                }
-            }
-        };
-
-        let res_prop4 = {
-            type: "residence", 
-            friction: 0.02,
-            bounds: {
-                min: {
-                    x: 210,
-                    y: 210,
-                },
-                max: {
                     x: 390,
                     y: 390,
                 }
             }
         };
-
 
         let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop}});
-        let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop2}});
-        let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop3}});
-        let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop4}});
-
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: 100}});
         
-        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
+        //TODO: add popSize agents...
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: popSize}});
         
+        //InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res1.uuid, to_location:res2.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2.uuid, to_location:res3.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res3.uuid, to_location:res4.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res1.uuid, num_agents:2}});
         
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
@@ -135,8 +79,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         };
   
         let default_simulation_colors = {
-            viva_colors: [0x9370DBff, 0x00FF00ff, 0xFFFF00ff, 0xFFA500ff, 0x0000FFff, 0xA9A9A9ff, 0xFF00FFff, 0x00CED1ff,0x98FB98ff, 0xCD853Fff],
-            matter_colors: ["mediumpurple", "lime", "yellow", "orange", "blue", "darkgrey", "fuchsia", "darkturquoise", "palegreen", "peru"]
+            viva_colors: [0xA9A9A9ff, 0x00FF00ff, 0xFFFF00ff, 0xFFA500ff, 0x0000FFff, 0xA9A9A9ff, 0xFF00FFff, 0x00CED1ff,0x98FB98ff, 0xCD853Fff],
+            matter_colors: ["darkgrey", "lime", "yellow", "orange", "blue", "darkgrey", "fuchsia", "darkturquoise", "palegreen", "peru"]
         }
 
         

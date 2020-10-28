@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paperControlls: {
     minHeight: 400,
-    minWidth: 400,
+    minWidth: 800,
     textAlign: 'center',
     padding: theme.spacing(2)
   }
@@ -59,6 +59,14 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     InfectiousMatterRef.current.setup_renderer(action.payload.sim_div.current);
     InfectiousMatterRef.current.setup_matter_env();
   }
+  if (action.type == 'update_infection_params') {
+    if(action.payload.per_contact_infection) {
+      InfectiousMatterRef.current.infection_params.per_contact_infection = action.payload.per_contact_infection;
+    }
+    if(action.payload.infectious_period_mu) {
+      InfectiousMatterRef.current.infection_params.infectious_period_mu = action.payload.infectious_period_mu;
+    }
+  };
   if (action.type == 'update_mask_transmission_params') {
     if(action.payload.self_protection) {
       InfectiousMatterRef.current.mask_transmission_props.self_protection = action.payload.self_protection;
@@ -79,6 +87,19 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'add_location') {
     let res = InfectiousMatterRef.current.add_location('residence', action.payload.residence_props)
     return res;
+  }
+  if (action.type == 'add_random_agent') {
+    let random_res = Matter.Common.choose(InfectiousMatterRef.current.locations);
+    let new_agent = InfectiousMatterRef.current.add_agent(random_res);
+
+    if (action.payload && action.payload.callback && new_agent) {
+      action.payload.callback(new_agent.agent_object); 
+    }
+  }
+
+  if (action.type == 'remove_random_agent') {
+    let random_agent = Matter.Common.choose(InfectiousMatterRef.current.agents);
+    InfectiousMatterRef.current.delete_agent(random_agent);
   }
   if (action.type == 'add_agents') {
     let new_agent = null;
@@ -107,7 +128,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     if(action.payload.num_agents) {
       for(let i=0; i< action.payload.num_agents; i++) {
         let random_agent = Matter.Common.choose(InfectiousMatterRef.current.agents);
-        InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED);
+        InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.INFECTED);
       }
     }
   } 
@@ -150,25 +171,23 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
         masked_list[i].masked = false;
       }
     }
-    /*
-    if (num_needing_masks > 0){
-      for (let i=0; i < num_needing_masks; i++){
-        let agent_to_mask = Matter.Common.choose(unmasked_list);
-        if (agent_to_mask.masked == false){
-          agent_to_mask.masked = true;
-        }
-      }
-    }
-    else if(num_needing_masks < 0){
-      for (let i=0; i < -num_needing_masks; i++){
-        let agent_to_unmask = Matter.Common.choose(masked_list);
-        if (agent_to_unmask) {
-          agent_to_unmask.masked=false;
-        }
-      }
-    }
-    */
   }
+
+  if (action.type == "set_pop_size") {
+    //target pop size - current pop size:
+    let num_to_add = action.payload.pop_size - InfectiousMatterRef.current.agents.length;
+
+    if (num_to_add > 0) {
+      for(let i=0; i< num_to_add; i++) {
+        InfectiousMatterAPI(InfectiousMatterRef, {type: 'add_random_agent'});
+      }
+    } else if (num_to_add < 0) {
+      for(let i=0; i< -num_to_add; i++) {
+        InfectiousMatterAPI(InfectiousMatterRef, {type: 'remove_random_agent'});
+      }
+    }
+
+  };
 };
 
 
@@ -177,10 +196,14 @@ const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
   const [numMasked, setNumMasked] = useState(0);
+  const [popSize, setPopSize] = useState(500);
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
   const [movementScale, setMovementScale] = useState(2.0);
-  
+   
+  const [perContactInfection, setPerContactInfection] = useState(0.5);
+  const [infectiousPeriodMean, setInfectiousPeriodMean] = useState(5);
+
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [worldReadyTrigger, setWorldReadyTrigger] = useState(0);
 
@@ -199,8 +222,16 @@ const InfectiousMatterContainer = (props) => {
       });
   }
 
-  function handleNumMaskedSliderChange(event, newValue){
-    setNumMasked(newValue);
+  function handlePerContactInfectionChange(event, newValue) {
+    setPerContactInfection(newValue);
+  }
+
+  function handleInfectiousPeriodMean(event, newValue) {
+    setInfectiousPeriodMean(newValue);
+  }
+
+  function handlePopSizeSliderChange(event, newValue){
+    setPopSize(newValue);
   }
   function handleMaskSelfProtectionChange(event, newValue) {
     setMaskSelfProtection(newValue);
@@ -211,6 +242,18 @@ const InfectiousMatterContainer = (props) => {
   function handleMovementScaleChange(event, newValue) {
     setMovementScale(newValue);
   }
+  
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef, 
+      {type: 'update_infection_params', payload: {per_contact_infection: perContactInfection}});
+  }, [perContactInfection])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef, 
+      {type: 'update_infection_params', payload: {infectious_period_mu: infectiousPeriodMean}});
+  }, [infectiousPeriodMean])
 
   useEffect( () => {
     InfectiousMatterAPI (
@@ -234,9 +277,14 @@ const InfectiousMatterContainer = (props) => {
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: numMasked}});
   }, [numMasked]);
 
+  useEffect( () => {
+    InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_pop_size', payload: {pop_size: popSize}});
+    setWorldReadyTrigger(c => c+1);
+  }, [popSize]);
+
   return (
     <div className="App">
-      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={3}>
+      <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
         <Grid item>
           <Card className={classes.paper}>
           <InfectiousMatterPlot                 
@@ -254,9 +302,11 @@ const InfectiousMatterContainer = (props) => {
             redraw_trigger={redraw_trigger}
             setWorldReadyTrigger={setWorldReadyTrigger}
             numMasked={numMasked}
+            popSize={popSize}
           />
         </Card>
         </Grid>
+        {/* 
         <Grid item>
           <Card className={classes.paper}>
             <InfectiousMatterContactGraph                 
@@ -266,23 +316,24 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
-      </Grid>
+        */}
 
-      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
+      </Grid>
+      <Grid container direction="row" justify="center" className={classes.root} spacing={10}>
         <Grid item alignItems="flex-start">
-        <Card className={classes.paper}>
+        <Card className={classes.paperControlls}>
           <List>
           <ListSubheader disableSticky={true}>World Settings</ListSubheader>
           <ListItem>
-            <ListItemText id="Masks" primary="Number Masked" />
+            <ListItemText id="PopSize" primary="Pop Size" />
               <Slider
-                value={numMasked}
+                value={popSize}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="on"
-                onChange={handleNumMaskedSliderChange}
+                onChange={handlePopSizeSliderChange}
                 step={1}
                 min={0}
-                max={400}
+                max={800}
               />
           </ListItem>
           <ListItem>
@@ -311,13 +362,13 @@ const InfectiousMatterContainer = (props) => {
           </ListItem>          
 
           
-          <ListSubheader disableSticky={true}>Mask Settings</ListSubheader>
+          <ListSubheader disableSticky={true}>Infection Settings</ListSubheader>
           <ListItem>
-            <ListItemText id="selfProtection" primary="Self Protection"/>
+            <ListItemText id="infectionRate" primary="Prob. Infection"/>
               <Slider
-                value={maskSelfProtection}
+                value={perContactInfection}
                 aria-labelledby="continuous-slider"
-                onChange={handleMaskSelfProtectionChange}
+                onChange={handlePerContactInfectionChange}
                 valueLabelDisplay="on"
                 min={0}
                 max={1}
@@ -325,28 +376,21 @@ const InfectiousMatterContainer = (props) => {
               />
             </ListItem>
           <ListItem>
-            <ListItemText id="othersProtection" primary="Others Protection" />
+            <ListItemText id="infectiousPeriod" primary="Mean Infectious Period" />
               <Slider
-                value={maskOthersProtection}
+                value={infectiousPeriodMean}
                 aria-labelledby="continuous-slider"
-                onChange={handleMaskOthersProtectionChange}
+                onChange={handleInfectiousPeriodMean}
                 valueLabelDisplay="on"
-                min={0}
-                max={1}
-                step={0.01}
+                min={3}
+                max={12}
+                step={0.1}
               />
           </ListItem>
         </List>
       </Card>
-        </Grid>
-        
-      <Grid item className={classes.controlls}>
-        <InfectiousMatterMigrationTable             
-          InfectiousMatterRef={InfectiousMatterRef}
-          InfectiousMatterAPI={InfectiousMatterAPI}
-          worldReadyTrigger={worldReadyTrigger}
-        />
       </Grid>
+        
     </Grid>
     </div>
   )

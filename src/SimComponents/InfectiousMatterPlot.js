@@ -27,7 +27,7 @@ let get_fresh_traces = function() {
     stackgroup: 'one',
     name: "Recovered",
     type: "scattergl",
-    marker: { color: "green" }
+    marker: { color: "blue" }
   };
 
   let plot_data = [infected, recovered, susceptible];
