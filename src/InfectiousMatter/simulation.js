@@ -212,7 +212,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	    });
     }
 
-    this.add_event({time: 100, callback: this.pulse_orgs_event(), recurring:true})
+    this.add_event({time: 100, callback: this.pulse_orgs_event(), recurring:true, stale:false})
 
 
 };
@@ -288,12 +288,16 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
     let days_to_recover = Math.max(jStat.exponential.sample(1/this.infection_params.infectious_period_mu), 3);
-    this.add_event( {
+
+    let update_org_event = {
         time: days_to_recover*this.simulation_params.sim_time_per_day,
         callback: () => {
-            this.update_org_state(org, AgentStates.RECOVERED)
-        }
-    });
+            this.update_org_state(org, AgentStates.RECOVERED);
+        },
+        stale: false
+    }
+    this.add_event(update_org_event);
+    org.agent_object.events.push(update_org_event)
 };
 
 InfectiousMatter.prototype.register_infection_callback = function(callback) {
@@ -340,7 +344,8 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_
                 this_edge = ContactGraph.addLink(this_agent_body.agent_object.uuid, other_agent.uuid, {origin:this_agent_body.agent_object.uuid, timestamp:this.cur_sim_time});
                 this.add_event( {
                     time: this.simulation_params.link_lifetime+1, 
-                    callback: this._check_edge_for_removal(this_edge)
+                    callback: this._check_edge_for_removal(this_edge),
+                    stale: false
                 });
             }
 
@@ -400,6 +405,7 @@ InfectiousMatter.prototype.delete_agent = function(an_agent) {
 
     this.state_counts[an_agent.state] -= 1;
     //TODO: Clear events associated with this agent?
+    an_agent.events.forEach((event) => {event.stale = true;})
 }
 
 InfectiousMatter.prototype.add_event = function (q_item) {

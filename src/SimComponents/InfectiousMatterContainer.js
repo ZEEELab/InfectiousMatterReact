@@ -306,7 +306,7 @@ const InfectiousMatterContainer = (props) => {
           />
         </Card>
         </Grid>
-        {/* 
+        
         <Grid item>
           <Card className={classes.paper}>
             <InfectiousMatterContactGraph                 
@@ -316,7 +316,7 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
-        */}
+      
 
       </Grid>
       <Grid container direction="row" justify="center" className={classes.root} spacing={10}>
@@ -376,7 +376,7 @@ const InfectiousMatterContainer = (props) => {
               />
             </ListItem>
           <ListItem>
-            <ListItemText id="infectiousPeriod" primary="Mean Infectious Period" />
+            <ListItemText id="infectiousPeriod" primary="Mean Infectious Days" />
               <Slider
                 value={infectiousPeriodMean}
                 aria-labelledby="continuous-slider"
