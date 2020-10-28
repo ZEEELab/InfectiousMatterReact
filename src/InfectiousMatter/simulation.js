@@ -312,7 +312,8 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
         else {
             this.add_event( {
                 time:(this.cur_sim_time + this.simulation_params.link_lifetime) - edge.data.timestamp,
-                callback: this._check_edge_for_removal(edge)
+                callback: this._check_edge_for_removal(edge),
+                stale: false
             }); 
         }
     };

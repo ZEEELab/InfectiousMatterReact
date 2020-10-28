@@ -306,8 +306,8 @@ const InfectiousMatterContainer = (props) => {
           />
         </Card>
         </Grid>
-        
-        <Grid item>
+        {/* 
+          <Grid item>
           <Card className={classes.paper}>
             <InfectiousMatterContactGraph                 
               InfectiousMatterRef={InfectiousMatterRef}
@@ -316,8 +316,7 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
-      
-
+        */}
       </Grid>
       <Grid container direction="row" justify="center" className={classes.root} spacing={10}>
         <Grid item alignItems="flex-start">
