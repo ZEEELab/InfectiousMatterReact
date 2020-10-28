@@ -41,7 +41,7 @@ let pathogen_color_range = interpolate(['white']);
 
 var AgentStates = {
     SUSCEPTIBLE: 0,
-    INFECTED: 1
+    INFECTED: 1,
     RECOVERED: 2,
     size: 3
 };
@@ -283,35 +283,20 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     } else {
         org.agent_object.pathogen = new Pathogen(0.5, 'root');
     }
+
     this.update_org_state(org, AgentStates.INFECTED);
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
+    let days_to_recover = Math.max(jStat.normal.sample(this.infection_params.infectious_period_mu, this.infection_params.infectious_period_sigma), 4);
 
     this.add_event( {
-
-        time: Math.max(jStat.normal.sample(this.infection_params.incubation_period_mu, this.infection_params.incubation_period_sigma), 1)*this.simulation_params.sim_time_per_day,
+        time: days_to_recover*this.simulation_params.sim_time_per_day,
         callback: () => {
-            this.update_org_state(org, eventual_infected_state);
-            let days_to_recover = 0;
-            if (eventual_infected_state == AgentStates.A_INFECTED) {
-                //
-                days_to_recover = Math.max(jStat.normal.sample(this.infection_params.asymptomatic_infectious_period_mu, this.infection_params.asymptomatic_infectious_period_sigma), 0.5);
-            } else {
-                //we're symtomatic!
-                days_to_recover = Math.max(jStat.normal.sample(this.infection_params.infectious_period_mu, this.infection_params.infectious_period_sigma), 4);
-            }
-
-            this.add_event( {
-                time: days_to_recover*this.simulation_params.sim_time_per_day,
-                callback: () => {
-                    this.update_org_state(org, AgentStates.RECOVERED)
-                }
-            });
+            this.update_org_state(org, AgentStates.RECOVERED)
         }
     });
+};
 
-
-}
 InfectiousMatter.prototype.register_infection_callback = function(callback) {
     this.post_infection_callback = callback;
 }
@@ -337,24 +322,15 @@ InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_
 InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_body) {
     return (
         (other_agent) => {
-            if ((other_agent.state == AgentStates.S_INFECTED ||
-                other_agent.state == AgentStates.A_INFECTED) && 
+            if (other_agent.state == AgentStates.INFECTED && 
                 this_agent_body.agent_object.state == AgentStates.SUSCEPTIBLE) {
 
                 if (Matter.Common.random(0, 1) < this.calc_prob_infection(this_agent_body, other_agent.body)) {
-                    //we're going to infect this org so 
-                    //now we have to pick which state...
-                    let future_state;
-                    if (Matter.Common.random(0,1) < this.infection_params.fraction_asymptomatic) {
-                        future_state = AgentStates.A_INFECTED;
-                    } else {
-                        future_state = AgentStates.S_INFECTED;
-                    }
-
-                    this.expose_org(this_agent_body, future_state, other_agent);
+                    this.expose_org(this_agent_body, AgentStates.INFECTED, other_agent);
                     //this.`post_infection_callback`(this_agent.agent_object, other_agent);
                 }
             }
+
             assert(other_agent.uuid && this_agent_body.agent_object.uuid)
 
             var this_edge = ContactGraph.hasLink(this_agent_body.agent_object.uuid, other_agent.uuid) || ContactGraph.hasLink(other_agent.uuid, this_agent_body.agent_object.uuid);
@@ -373,7 +349,7 @@ InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_
     );
 };
 
-tiousMatter.prototype.add_agent = function(home_location, agent_state=AgentStates.SUSCEPTIBLE) {
+InfectiousMatter.prototype.add_agent = function(home_location, agent_state=AgentStates.SUSCEPTIBLE) {
 
     assert(home_location && home_location.get_random_position);
 
