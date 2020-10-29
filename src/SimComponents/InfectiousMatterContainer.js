@@ -1,5 +1,9 @@
 import React, {useRef, useEffect, useReducer, useState, useLayoutEffect} from 'react';
 import Button from '@material-ui/core/Button';
+import { Accordion } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { AccordionSummary } from '@material-ui/core';
+import { AccordionDetails } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -7,35 +11,33 @@ import Typography from '@material-ui/core/Typography';
 import { InfectiousMatter} from '../InfectiousMatter/simulation.js';
 import InfectiousMatterSimulation, {AgentStates, ContactGraph} from './InfectiousMatterSimulation.js';
 import InfectiousMatterContactGraph from './InfectiousMatterContactGraph.js';
-import InfectiousMatterMigrationTable from './InfectiousMatterMigrationTable';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import MaterialTable from 'material-table';
+import { Scrollama, Step } from 'react-scrollama';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 0,
-    minWidth:1200
+    minWidth:1000
   },
   controlls: {
-    width:600,
+    width:300,
   },
   paper: {
-    minHeight: 400,
-    minWidth: 400,
+    height: 300,
+    width: 300,
     textAlign: 'center',
   },
   paperControlls: {
-    minHeight: 400,
-    minWidth: 800,
+    minHeight: 300,
+    minWidth: 300,
     textAlign: 'center',
-    padding: theme.spacing(2)
+    padding: theme.spacing(1)
   }
 }));
 
@@ -196,7 +198,7 @@ const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
   const [numMasked, setNumMasked] = useState(0);
-  const [popSize, setPopSize] = useState(500);
+  const [popSize, setPopSize] = useState(350);
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
   const [movementScale, setMovementScale] = useState(2.0);
@@ -306,8 +308,8 @@ const InfectiousMatterContainer = (props) => {
           />
         </Card>
         </Grid>
-        {/* 
-          <Grid item>
+
+        <Grid item>
           <Card className={classes.paper}>
             <InfectiousMatterContactGraph                 
               InfectiousMatterRef={InfectiousMatterRef}
@@ -316,11 +318,16 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
-        */}
+
       </Grid>
-      <Grid container direction="row" justify="center" className={classes.root} spacing={10}>
-        <Grid item alignItems="flex-start">
-        <Card className={classes.paperControlls}>
+      
+      <Grid container direction="row" justify="center" className={classes.root} spacing={2}>
+        <Grid item>
+        <Accordion spacing={2}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Controlls</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
           <List>
           <ListSubheader disableSticky={true}>World Settings</ListSubheader>
           <ListItem>
@@ -328,7 +335,7 @@ const InfectiousMatterContainer = (props) => {
               <Slider
                 value={popSize}
                 aria-labelledby="discrete-slider"
-                valueLabelDisplay="on"
+                valueLabelDisplay="auto"
                 onChange={handlePopSizeSliderChange}
                 step={1}
                 min={0}
@@ -340,7 +347,7 @@ const InfectiousMatterContainer = (props) => {
             <Slider
               value={movementScale}
               aria-labelledby="discrete-slider"
-              valueLabelDisplay="on"
+              valueLabelDisplay="auto"
               onChange={handleMovementScaleChange}
               step={0.25}
               min={0}
@@ -350,10 +357,10 @@ const InfectiousMatterContainer = (props) => {
           <ListItem>
             <Grid container direction="row" spacing={3}>
               <Grid item>
-                <Button variant="contained" onClick={resetSimulation}>Reset</Button>
+                <Button variant="contained" size="small" onClick={resetSimulation}>Reset</Button>
               </Grid>
               <Grid item>
-                <Button variant="contained" onClick={infectAgent}>
+                <Button variant="contained" size="small" onClick={infectAgent}>
                   Infect Random Agent
                 </Button>
               </Grid>
@@ -368,7 +375,7 @@ const InfectiousMatterContainer = (props) => {
                 value={perContactInfection}
                 aria-labelledby="continuous-slider"
                 onChange={handlePerContactInfectionChange}
-                valueLabelDisplay="on"
+                valueLabelDisplay="auto"
                 min={0}
                 max={1}
                 step={0.01}
@@ -380,16 +387,21 @@ const InfectiousMatterContainer = (props) => {
                 value={infectiousPeriodMean}
                 aria-labelledby="continuous-slider"
                 onChange={handleInfectiousPeriodMean}
-                valueLabelDisplay="on"
+                valueLabelDisplay="auto"
                 min={3}
                 max={12}
                 step={0.1}
               />
           </ListItem>
         </List>
-      </Card>
-      </Grid>
-        
+          </AccordionDetails>
+        </Accordion>
+        </Grid>
+    </Grid>
+    <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
+      <Typography>
+        Some
+      </Typography>
     </Grid>
     </div>
   )

@@ -56,8 +56,8 @@ let infection_layout = {
       title: "Count",
       rangemode: 'nonnegative'
   },
-  width:390,
-  height:390
+  width:290,
+  height:290
 };
 
 const initial_traces = get_fresh_traces();

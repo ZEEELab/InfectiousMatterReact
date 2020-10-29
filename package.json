@@ -22,6 +22,7 @@
     "react-dom": "^16.13.1",
     "react-plotly.js": "^2.4.0",
     "react-scripts": "^4.0.0",
+    "react-scrollama": "^2.2.12",
     "uniqid": "^5.2.0",
     "vivagraphjs": "^0.12.0"
   },
