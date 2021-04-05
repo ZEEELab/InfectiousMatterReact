@@ -21,9 +21,10 @@ function AgentStates() {
 	this.StateSpace =  {
         SUSCEPTIBLE: 0,
         INFECTED: 1,
-        RECOVERED: 2
+        RECOVERED: 2,
+        IMMUNE: 3
     }
-    this.size = 3
+    this.size = 4
     
     
 

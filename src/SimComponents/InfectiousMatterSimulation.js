@@ -10,26 +10,56 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
     const sim_div = useRef(null);
 
     const setup_world = (num_to_mask) => {
-        let res_prop = {
+        let res_prop1 = {
             type: "residence", 
-            friction: 0.01,
+            friction: 0.05,
+            immunized_frac: 0.1,
             bounds: {
                 min: {
                     x: 10,
                     y: 10,
                 },
                 max: {
-                    x: 290,
-                    y: 290,
+                    x: 150,
+                    y: 150,
                 }
             }
         };
+        let res_prop2 = Matter.Common.clone(res_prop1);
+        res_prop2.bounds.min.x = 160;
+        res_prop2.bounds.max.x = 300;
+        res_prop2.immunized_frac = 0.3;
 
-        let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop}});
+        let res_prop3 = Matter.Common.clone(res_prop1);
+        res_prop3.bounds.min.x = 310;
+        res_prop3.bounds.max.x = 450;
+        res_prop3.immunized_frac = 0.5;
         
+        let res_prop4 = Matter.Common.clone(res_prop1);
+        res_prop4.bounds.min.x = 460;
+        res_prop4.bounds.max.x = 600;
+        res_prop4.immunized_frac = 0.7;
+
+        let res_prop5 = Matter.Common.clone(res_prop1);
+        res_prop5.bounds.min.x = 610;
+        res_prop5.bounds.max.x = 750;
+        res_prop5.immunized_frac = 0.9;
+
+
+        let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop1}});
+        let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop2}});
+        let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop3}});
+        let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop4}});
+        let res5 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop5}});
+
         //TODO: add popSize agents...
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: popSize}});        
-        
+        //let agent_callback = (t_agent) => {}
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: popSize/5}});        
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: popSize/5}});        
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: popSize/5}});        
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: popSize/5}});        
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res5, num_agents: popSize/5}});        
+
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: num_to_mask}});
@@ -50,7 +80,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         
         let simulation_params = {
             sim_time_per_day: 1000,
-            agent_size: 4,
+            agent_size: 2,
             link_lifetime: 200,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
@@ -71,18 +101,18 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             fraction_seek_care: 0.5,
             fraction_isolate: 0.2,
             time_to_seek_care: 2.5,
-            movement_scale: 2.0,
+            movement_scale: 1.0,
         };
   
-        let default_simulation_colors = {
-            viva_colors: [0xA9A9A9ff, 0x00FF00ff, 0xFFFF00ff, 0xFFA500ff, 0x0000FFff, 0xA9A9A9ff, 0xFF00FFff, 0x00CED1ff,0x98FB98ff, 0xCD853Fff],
-            matter_colors: ["darkgrey", "lime", "yellow", "orange", "blue", "darkgrey", "fuchsia", "darkturquoise", "palegreen", "peru"]
+        let grey_simulation_colors = {
+            viva_colors: [0xA9A9A9ff, 0xA9A9A9ff, 0xA9A9A9ff, 0xA9A9A9ff, 0xA9A9A9ff, 0xA9A9A9ff, 0xA9A9A9ff],
+            matter_colors: ["darkgrey","darkgrey", "darkgrey", "darkgrey", "darkgrey", "darkgrey", "darkgrey"]
         }
 
         
         console.log('initalizing matter')
 
-        InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, default_simulation_colors);
+        InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, grey_simulation_colors);
         InfectiousMatterAPI(InfectiousMatterRef, {type:'setup_environment', payload:{sim_div:sim_div}});
 
         setup_world(numMasked);
@@ -100,7 +130,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
 
     return (
         <div>
-            <div ref={sim_div} style={{height:300, width:300}}>
+            <div ref={sim_div} style={{height:160, width:'auto'}}>
 
             </div>
         </div>

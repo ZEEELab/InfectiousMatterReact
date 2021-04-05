@@ -12,7 +12,8 @@ function Location(name) {
 	this.name = name;
 	this.uuid = uniqid();
 	this.bounds = undefined;
-	this.friction = 0.2;
+	this.props = {};
+	this.friction = 0.02;
 	this.occupants = [];
 	this.border_color = undefined;
 }

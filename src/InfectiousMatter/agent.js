@@ -19,6 +19,7 @@ function Agent(body) {
 	this.home_state = {};
 	this.migrating = false;
 	this.masked = false;
+	this.immunized = false;
 }
 
 Agent.prototype.add_body = function(body) {

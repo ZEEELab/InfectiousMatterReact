@@ -43,7 +43,8 @@ var AgentStates = {
     SUSCEPTIBLE: 0,
     INFECTED: 1,
     RECOVERED: 2,
-    size: 3
+    IMMUNE:3,
+    size: 4
 };
 
 var Engine = Matter.Engine;
@@ -203,11 +204,11 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	            for (let i=0; i< this.locations.length; i++) {
 	                this.locations[i].draw_borders(ctx);
                 } 
-                this.agents.forEach( (agent) => {
+                /* this.agents.forEach( (agent) => {
                     if(agent.masked){
                         agent.draw_mask(ctx, this.simulation_params.agent_size);
                     }
-                });
+                }); */
 	        }
 	    });
     }
@@ -230,20 +231,23 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     let viva_node_color;
 
     //todo: refactor to callback?
-    //refactor to event!
     switch(new_state) {
         case AgentStates.INFECTED:
             stroke_color = "red";
+            org.render.fillStyle = "red";
             viva_node_color = 0xFF0000ff;
             break;
         case AgentStates.RECOVERED:
-            stroke_color = "blue";
+            stroke_color = "red";
+            org.render.fillStyle = org.agent_object.home_color;
             viva_node_color = 0xFFFFFFff;
             break;
         case AgentStates.SENSITIVE:
             stroke_color = "black";
-            org.render.lineWidth = 0;
+            org.render.lineWidth = 3;
             break;
+        case AgentStates.IMMUNE:
+            stroke_color = "grey";
         };
 
     org.render.strokeStyle = stroke_color;
@@ -258,6 +262,7 @@ InfectiousMatter.prototype.add_location = function(name, location_properties) {
     new_location.set_bounds(location_properties.bounds);
     new_location.friction = location_properties.friction;
     new_location.type = location_properties.type || 'none';
+    new_location.immunized_frac = location_properties.immunized_frac || 0.00;
 
     new_location.home_color = this.simulation_colors.matter_colors[this.locations.length];
     new_location.viva_node_color = this.simulation_colors.viva_colors[this.locations.length];
@@ -319,6 +324,24 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
     };
 };
 
+InfectiousMatter.prototype.update_colors = function(new_color_dict) {
+    this.simulation_colors = Matter.Common.extend(this.simulation_colors, new_color_dict);
+    console.log(this.simulation_colors);
+    //new_location.home_color = this.simulation_colors.matter_colors[this.locations.length];
+    //new_location.viva_node_color = this.simulation_colors.viva_colors[this.locations.length];
+    this.locations.forEach( (this_loc, loc_idx) => {
+        this_loc.home_color = this.simulation_colors.matter_colors[loc_idx];
+        this_loc.viva_node_color = this.simulation_colors.viva_colors[loc_idx];
+    });
+
+    this.agents.forEach( (an_agent) => {
+        an_agent.home_color = an_agent.location.home_color;
+        //set their fill, then re-call updateState with the same state...
+        an_agent.body.render.fillStyle = an_agent.home_color;
+        this.update_org_state(an_agent.body, an_agent.state);
+    });
+}
+
 InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
     return this.infection_params.per_contact_infection;
 }
@@ -361,7 +384,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     let loc = home_location.get_random_position();
     //let new_agent_body = 
     let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {plugin: {wrap: home_location.bounds}});
-    new_agent_body.render.fillStyle = home_location.home_color || "black";
+
     new_agent_body.strokeStyle = "black";
     new_agent_body.lineWidth = 2;
 
@@ -371,8 +394,9 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.restitution = 1.1;
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
-    new_agent_body.agent_object.viva_color = home_location.viva_node_color
-
+    new_agent_body.agent_object.color = home_location.home_color || "black";
+    new_agent_body.agent_object.viva_color = home_location.viva_node_color;
+    new_agent_body.render.fillStyle =  new_agent_body.agent_object.color;
     
     home_location.add_agent(new_agent_body.agent_object);
 
@@ -404,9 +428,14 @@ InfectiousMatter.prototype.delete_agent = function(an_agent) {
     Matter.Composite.remove(this.matter_engine.world, an_agent.body);
     ContactGraph.removeNode(an_agent.uuid);
 
+    
     this.state_counts[an_agent.state] -= 1;
-    //TODO: Clear events associated with this agent?
+
+    //set events associated with this agent to stale
     an_agent.events.forEach((event) => {event.stale = true;})
+    
+    //remove it from it's location
+    an_agent.location.remove_agent(an_agent);
 }
 
 InfectiousMatter.prototype.add_event = function (q_item) {

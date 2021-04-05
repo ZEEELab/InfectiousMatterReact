@@ -1,8 +1,5 @@
 import React, {useEffect, useState, useReducer, useRef, useLayoutEffect} from 'react';
 import {AgentStates, ContactGraph} from '../InfectiousMatter/simulation.js';
-import Agent from '../InfectiousMatter/agent.js';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import Viva from 'vivagraphjs';
 
 let viva_layout = Viva.Graph.Layout.forceDirected(ContactGraph, {
