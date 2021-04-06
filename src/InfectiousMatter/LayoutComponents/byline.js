@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     return (
         <Grid container direction="row" justify="flex-start" alignItems="center" spacing={3}>
             <Grid item>
-                <Avatar src="/static/lz_small.png" />
+                <Avatar src="static/lz_small.png" />
             </Grid>
             <Grid item>
                 <Typography>

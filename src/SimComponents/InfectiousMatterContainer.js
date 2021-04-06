@@ -14,6 +14,7 @@ import InfectiousMatterSimulation, { AgentStates, ContactGraph } from './Infecti
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
 import BylineComponent from '../InfectiousMatter/LayoutComponents/byline.js';
+import Link from '@material-ui/core/Link';
 
 import { Scrollama, Step } from 'react-scrollama';
 
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
   headingPanel: {
     height: "100vh",
-    minHeight: "200px",
+    minHeight: "600px",
     marginTop: "50vh",
   },
   contentPanel: {
@@ -273,6 +274,7 @@ const InfectiousMatterContainer = (props) => {
 
   //TODO All simulation changes in this code...
   const onStepEnter = ({ element, data, direction }) => {    
+    console.log(data);
     if (data == "infect_agents") {
       infectAgents(1);
     }
@@ -348,14 +350,19 @@ const InfectiousMatterContainer = (props) => {
 
           <BylineComponent date="April 11th, 2021" />
 
-          <Container className={classes.introFooter}>
-            <Zoom in={true}>
-              <Typography variant="h5" gutterBottom>
-                A year ago, I built InfectiousMatter to help folks gain an intuition for disease transmission dynamics without having to wait and
-                learn from our own mistakes. A year later, we've all unfortunately learned more than expected.
-              </Typography>
-            </Zoom>
-          </Container>
+          <Zoom in={true}>
+            <Container className={classes.introFooter}>
+                <Typography variant="h5" gutterBottom>
+                  A year ago, I built <Link color="inherit" href="https://infectiousmatter.com">InfectiousMatter</Link> to help folks gain an intuition for disease transmission dynamics without having to wait and
+                  learn from our own mistakes. A year later, we've all unfortunately learned more than expected.
+                </Typography>
+
+                <Link color="inherit" href="https://infectiousmatter.com">
+                  <img src="static/teaser.png" height="300" />
+                </Link>
+            </Container>
+          </Zoom>
+
         </Container>
       </Step>
 
@@ -430,7 +437,7 @@ const InfectiousMatterContainer = (props) => {
           </Typography>
         </Container>
       </Step>
-      <Step data={"infect_agents"} key={7}>
+      <Step data={"infect_agents"} key={17}>
         <Container className={classes.subPanel}>
           <Typography>
             trigger infecton -- 
