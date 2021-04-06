@@ -23,12 +23,20 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 1000,
     position: 'relative',
   },
+  headingPanel: {
+    height: "100vh",
+    minHeight: "200px",
+    marginTop: "50vh",
+  },
   contentPanel: {
     height: "100vh",
     minHeight: "200px",
   },
   subPanel: {
     height: "20vh",
+  },
+  introFooter: {
+    marginTop: "10vh",
   },
   stickyContent: {
     position: "sticky",
@@ -318,111 +326,131 @@ const InfectiousMatterContainer = (props) => {
 
   return (
     <div className="App">
-        <Container className={classes.contentPanel}>
+        <Container className={classes.headingPanel}>
           <Typography variant="h2" component="h2" gutterBottom>
-            Racing Towards Herd Immunity
+            Our Race Towards Herd Immunity
           </Typography>
 
           <BylineComponent date="April 11th, 2021" />
 
-          <Container className={classes.subPanel}>
-            <Typography gutterBottom>
+          <Container className={classes.introFooter}>
+            <Typography variant="h5" gutterBottom>
               A year ago, I built InfectiousMatter to help folks build their intuition for disease transmission dynamics without having to wait and
-              learn from our own mistakes. A year later, we've all learned even more than I could have anticipated.
-            </Typography>
-          </Container>
-
-          <Container className={classes.subPanel}>
-            <Typography gutterBottom className={classes.contentPanel}>
-              Now we have multiple vaccines being administered around the world at (all things considered) incredible speeds. We're truely racing
-              towards <i>herd immunity</i>. But how fast we get there, and how many lives are saved on the way, really does depend on
-              the decisions we make in the next few months.
-            </Typography>
-          </Container>
-
-          <Container className={classes.subPanel}>
-            <Typography gutterBottom className={classes.contentPanel}>
-              At the start of (and throughout) the pandemic, limiting transmission has been critical to avoiding overwhelming our
-              healthcare systems. Of course that is still the case, but now we have even more to gain (or to lose) by making
-              hard choices in our final push towards a return to normalcy.
+              learn from our own mistakes. A year later, we've all unfortunately learned even more than I could have anticipated.
             </Typography>
           </Container>
         </Container>
+        
 
+        <Scrollama debug>
+          <Step>
+            <div>
+              //start
+            </div>
+          </Step>
+          <Step data={1} key={1}>
+            <Container className={classes.contentPanel}>
 
-        <Container className={classes.stickyContent}>
-              <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
-                <Grid item>
-                  <Card className={classes.sim_paper}>
-                    <InfectiousMatterSimulation
-                      InfectiousMatterRef={InfectiousMatterRef}
-                      InfectiousMatterAPI={InfectiousMatterAPI}
-                      redraw_trigger={redraw_trigger}
-                      setWorldReadyTrigger={setWorldReadyTrigger}
-                      numMasked={numMasked}
-                      popSize={popSize}
-                    />
-                  </Card>
-                </Grid>
-              </Grid>
+              <Container className={classes.subPanel}>
+                <Typography gutterBottom className={classes.contentPanel}>
+                  Now we have multiple vaccines being administered around the world at (all things considered) incredible speeds. We're truely racing
+                  towards <i>herd immunity</i>. But how fast we get there, and how many lives are saved on the way, really does depend on
+                  the decisions we make in the next few months.
+                </Typography>
+              </Container>
 
-              <Grid container direction="row" justify="center" className={classes.root} spacing={2}>
-                <Grid item>
-                  <Typography id="popsize-slider" gutterBottom>
-                    Population Size
-                  </Typography>
-                  <Slider
-                    value={popSize}
-                    aria-labelledby="popsize-slider"
-                    valueLabelDisplay="auto"
-                    onChange={handlePopSizeSliderChange}
-                    step={1}
-                    min={0}
-                    max={800}
-                  />
-                  <Typography id="movement-slider" gutterBottom>
-                    Movement
-                  </Typography>
-                  <Slider
-                    value={movementScale}
-                    aria-labelledby="movement-slider"
-                    valueLabelDisplay="auto"
-                    onChange={handleMovementScaleChange}
-                    step={0.25}
-                    min={0}
-                    max={10}
-                  />
-                  <Grid container direction="row" spacing={3}>
+              <Container className={classes.subPanel}>
+                <Typography gutterBottom className={classes.contentPanel}>
+                  At the start of (and throughout) the pandemic, limiting transmission has been critical to avoiding overwhelming our
+                  healthcare systems. Of course that is still the case, but now we have even more to gain (or to lose) by making
+                  hard choices in our final push towards a return to normalcy.
+                </Typography>
+              </Container>
+            </Container>
+          </Step>
+
+          <Step>
+            <Container className={classes.stickyContent}>
+                  <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
                     <Grid item>
-                      <Button variant="contained" size="small" onClick={resetSimulation}>Reset</Button>
-                    </Grid>
-                    <Grid item>
-                      <Button variant="contained" size="small" onClick={infectAgent}>
-                        Infect Random Agent
-                      </Button>
+                      <Card className={classes.sim_paper}>
+                        <InfectiousMatterSimulation
+                          InfectiousMatterRef={InfectiousMatterRef}
+                          InfectiousMatterAPI={InfectiousMatterAPI}
+                          redraw_trigger={redraw_trigger}
+                          setWorldReadyTrigger={setWorldReadyTrigger}
+                          numMasked={numMasked}
+                          popSize={popSize}
+                        />
+                      </Card>
                     </Grid>
                   </Grid>
-                </Grid>
-              </Grid>
-        </Container>
 
-        <Container className={classes.contentPanel}>
-          <Typography>
-            TODO Trigger 1: Automatically infect someone in each location
-          </Typography>
-        </Container>
+                  <Grid container direction="row" justify="center" className={classes.root} spacing={2}>
+                    <Grid item>
+                      <Typography id="popsize-slider" gutterBottom>
+                        Population Size
+                      </Typography>
+                      <Slider
+                        value={popSize}
+                        aria-labelledby="popsize-slider"
+                        valueLabelDisplay="auto"
+                        onChange={handlePopSizeSliderChange}
+                        step={1}
+                        min={0}
+                        max={800}
+                      />
+                      <Typography id="movement-slider" gutterBottom>
+                        Movement
+                      </Typography>
+                      <Slider
+                        value={movementScale}
+                        aria-labelledby="movement-slider"
+                        valueLabelDisplay="auto"
+                        onChange={handleMovementScaleChange}
+                        step={0.25}
+                        min={0}
+                        max={10}
+                      />
+                      <Grid container direction="row" spacing={3}>
+                        <Grid item>
+                          <Button variant="contained" size="small" onClick={resetSimulation}>Reset</Button>
+                        </Grid>
+                        <Grid item>
+                          <Button variant="contained" size="small" onClick={infectAgent}>
+                            Infect Random Agent
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+            </Container>
+          </Step>
 
-        <Container className={classes.contentPanel}>
-          <Typography>
-            TODO Trigger 2: Show how increasing agent movement increases spread across the board
-          </Typography>
-        </Container>
+          <Step>
+            <Container className={classes.contentPanel}>
+              <Typography>
+                TODO Trigger 1: Automatically infect someone in each location
+              </Typography>
+            </Container>
+          </Step>
 
-        <Container className={classes.contentPanel}>
-          <Typography>
-            TODO Trigger 3: Focus on one level of immunity (say, 50%?) and show how increasing number of infections increases the number of infections
-          </Typography>
-        </Container>
+          <Step>
+            <Container className={classes.contentPanel}>
+              <Typography>
+                TODO Trigger 2: Show how increasing agent movement increases spread across the board
+              </Typography>
+            </Container>
+          </Step>
+
+          <Step>
+            <Container className={classes.contentPanel}>
+              <Typography>
+                TODO Trigger 3: Focus on one level of immunity (say, 50%?) and show how increasing number of infections increases the number of infections
+              </Typography>
+            </Container>
+          </Step>
+      </Scrollama>
 
     </div>
 
