@@ -433,7 +433,7 @@ InfectiousMatter.prototype.delete_agent = function(an_agent) {
 
     //set events associated with this agent to stale
     an_agent.events.forEach((event) => {event.stale = true;})
-    
+
     //remove it from it's location
     an_agent.location.remove_agent(an_agent);
 }
@@ -474,7 +474,7 @@ InfectiousMatter.prototype.remove_simulator = function() {
 InfectiousMatter.prototype.pulse_orgs_event = function() {
     return () => {
         if (this.agents.length > 0) {
-            for (let i=0; i < 100; i++) {
+            for (let i=0; i < 200; i++) {
                 let temp_agent = Matter.Common.choose(this.agents);
                 Matter.Body.applyForce(temp_agent.body, temp_agent.body.position, {
                     x:Matter.Common.random(-2e-5*this.infection_params.movement_scale, 2e-5*this.infection_params.movement_scale),

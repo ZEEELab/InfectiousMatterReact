@@ -6,14 +6,14 @@ const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
 
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, numMasked, popSize}) => {
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, numMasked, locationImmunity, popSize}) => {
     const sim_div = useRef(null);
 
-    const setup_world = (num_to_mask) => {
+    const setup_world = (locationImmunity) => {
         let res_prop1 = {
             type: "residence", 
             friction: 0.05,
-            immunized_frac: 0.1,
+            immunized_frac: locationImmunity[0],
             bounds: {
                 min: {
                     x: 10,
@@ -28,22 +28,22 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         let res_prop2 = Matter.Common.clone(res_prop1);
         res_prop2.bounds.min.x = 160;
         res_prop2.bounds.max.x = 300;
-        res_prop2.immunized_frac = 0.3;
+        res_prop2.immunized_frac = locationImmunity[1];
 
         let res_prop3 = Matter.Common.clone(res_prop1);
         res_prop3.bounds.min.x = 310;
         res_prop3.bounds.max.x = 450;
-        res_prop3.immunized_frac = 0.5;
+        res_prop3.immunized_frac = locationImmunity[2];
         
         let res_prop4 = Matter.Common.clone(res_prop1);
         res_prop4.bounds.min.x = 460;
         res_prop4.bounds.max.x = 600;
-        res_prop4.immunized_frac = 0.7;
+        res_prop4.immunized_frac = locationImmunity[3];
 
         let res_prop5 = Matter.Common.clone(res_prop1);
         res_prop5.bounds.min.x = 610;
         res_prop5.bounds.max.x = 750;
-        res_prop5.immunized_frac = 0.9;
+        res_prop5.immunized_frac = locationImmunity[4];
 
 
         let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop1}});
@@ -62,7 +62,6 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
 
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
-        InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: num_to_mask}});
     };
 
     useEffect(() => {
@@ -115,7 +114,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterRef.current = new InfectiousMatter(false, simulation_params, infection_params, grey_simulation_colors);
         InfectiousMatterAPI(InfectiousMatterRef, {type:'setup_environment', payload:{sim_div:sim_div}});
 
-        setup_world(numMasked);
+        setup_world(locationImmunity);
         //InfectiousMatterAPI(InfectiousMatterRef, {type:'reset_simulator'});
         
     }, [])
@@ -123,7 +122,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
     //redraw simulation if we get the triggers
     useLayoutEffect(()=> { 
         if(InfectiousMatterRef.current) {
-            setup_world(numMasked);
+            setup_world(locationImmunity);
             setWorldReadyTrigger( c => c+1);
         }
     }, [redraw_trigger])
