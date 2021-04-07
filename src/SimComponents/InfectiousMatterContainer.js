@@ -1,11 +1,13 @@
 import React, { useRef, useEffect, useReducer, useState, useLayoutEffect } from 'react';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Zoom from '@material-ui/core/Zoom';
-import Slide from '@material-ui/core/Slide';
 import Grow from '@material-ui/core/Grow';
-
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
@@ -15,6 +17,9 @@ import InfectiousMatterSimulation, { AgentStates, ContactGraph } from './Infecti
 //import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
+import Button from '@material-ui/core/Button';
+
+
 import BylineComponent from '../InfectiousMatter/LayoutComponents/byline.js';
 import Link from '@material-ui/core/Link';
 
@@ -263,9 +268,7 @@ const InfectiousMatterContainer = (props) => {
 
 
   const resetSimulation = (e) => {
-    setLocationImmunity([0.1, 0.3, 0.5, 0.7, 0.9]);
-    InfectiousMatterAPI(InfectiousMatterRef, { type: 'reset_simulator' });
-    setRedrawTrigger(c => c + 1);
+    resetImmunity([0.1, 0.3, 0.5, 0.7, 0.9]);
   };
 
   const infectAgents = (numToInfect) => {
@@ -297,6 +300,8 @@ const InfectiousMatterContainer = (props) => {
       infectAgents(1);
     }
     if (data == "infect_3_agents") {
+      resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5]);
+      setMovementScale(1.5);
       infectAgents(3);
     }
     if (data == "movement_reinfect") {
@@ -509,6 +514,10 @@ const InfectiousMatterContainer = (props) => {
              level of immunity required to protect a community. 
           </Typography>
 
+          <Typography variant="h6" gutterBottom className={classes.topPadding}>
+              TODO: Add screenshots of many trials?
+          </Typography>
+
         </Container>
         </Container>
 
@@ -543,8 +552,6 @@ const InfectiousMatterContainer = (props) => {
               <Typography variant="h5" gutterBottom >
                 This is precisely when small changes in behavior can have HUGE effects on the severity of an outbreak. 
               </Typography>
-
-
             </div>
 
 
@@ -552,7 +559,7 @@ const InfectiousMatterContainer = (props) => {
         </Container>
 
       </Step>
-      <Step data={"single_immunity"} key={8}>
+      <Step data={"infect_3_agents"} key={8}>
       <Container>
           <Container>
             <Typography variant="h5" gutterBottom className={classes.topPadding}>
@@ -566,11 +573,14 @@ const InfectiousMatterContainer = (props) => {
           </Container>
         </Container>
       </Step>
-      <Step data={"infect_3_agents"} key={7}>
+      <Step data={"something"} key={7}>
         <Container>
           <Container>
             <Typography>
               Just going from 1 to 3 infected individuals, the outbreaks are substantially larger!
+            </Typography>
+            <Typography variant="h6" gutterBottom className={classes.topPadding}>
+              TODO: Add screenshots of many trials? (both with 1 and with 3)
             </Typography>
           </Container>
         </Container>
@@ -582,6 +592,73 @@ const InfectiousMatterContainer = (props) => {
                 Instead of relaxing in the final stretch, we should try to be extra cautious. Small changes can make huge differences. 
           </Typography>
         </Container>
+    </Container>
+
+    <Container>
+      <Container>
+      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
+      <Typography variant="h6" gutterBottom>
+        Here are some controls you can play with to keep building your intuition about herd immunity. 
+        </Typography>
+          <Grid item alignItems="flex-start">
+          <Card className={classes.paper}>
+            <List>
+            <ListSubheader disableSticky={true}>World Settings</ListSubheader>
+
+            <ListItem>
+              <ListItemText id="Movement" primary="Movement Scale" />
+              <Slider
+                value={movementScale}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="on"
+                onChange={handleMovementScaleChange}
+                step={0.25}
+                min={0}
+                max={10}
+              />
+            </ListItem>
+            <ListSubheader disableSticky={true}>Immunity Actions</ListSubheader>
+            <ListItem>
+              <Grid container direction="row" spacing={3}>
+                <Grid item>
+                  <Button variant="contained" onClick={() => {resetSimulation()}}>Reset Gradient</Button>
+                </Grid>
+
+                <Grid item>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset 50%</Button>
+                </Grid>
+
+                <Grid item>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset 70%</Button>
+                </Grid>
+              </Grid>
+            </ListItem>
+
+            <ListSubheader disableSticky={true}>Infection Actions</ListSubheader>
+            <ListItem>
+              <Grid container direction="row" spacing={3}>
+                <Grid item>
+                  <Button variant="contained" onClick={()=>{infectAgents(1)}}>Infect 1</Button>
+                </Grid>
+
+                <Grid item>
+                <Button variant="contained" onClick={()=>{infectAgents(2)}}>Infect 2</Button>
+                </Grid>
+
+                <Grid item>
+                <Button variant="contained" onClick={()=>{infectAgents(3)}}>Infect 3</Button>
+                </Grid>
+
+              </Grid>
+            </ListItem>          
+          </List>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
+    </Container>
+    <Container className={classes.subPanel}>
+      
     </Container>
 
 
