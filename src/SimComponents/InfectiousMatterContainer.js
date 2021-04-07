@@ -3,6 +3,8 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Zoom from '@material-ui/core/Zoom';
+import Slide from '@material-ui/core/Slide';
+import Grow from '@material-ui/core/Grow';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -23,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 0,
     minWidth: 800,
     position: 'relative',
+  },
+  Typography: {
+
   },
   headingPanel: {
     height: "100vh",
@@ -229,18 +234,18 @@ const InfectiousMatterContainer = (props) => {
   const InfectiousMatterRef = useRef(null);
 
   const [locationImmunity, setLocationImmunity] = useState([0.1, 0.3, 0.5, 0.7, 0.9]);
-  const [numMasked, setNumMasked] = useState(0);
   const [popSize, setPopSize] = useState(600);
 
-  const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
-  const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
-  const [movementScale, setMovementScale] = useState(2.0);
 
-  const [perContactInfection, setPerContactInfection] = useState(0.5);
-  const [infectiousPeriodMean, setInfectiousPeriodMean] = useState(5);
+  const [movementScale, setMovementScale] = useState(2.0);
 
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [worldReadyTrigger, setWorldReadyTrigger] = useState(0);
+
+  const [reveal_1, setReveal_1] = useState(false);
+  const [reveal_2, setReveal_2] = useState(false);
+  const [reveal_3, setReveal_3] = useState(false);
+
 
   /* This is a bit annoying because immunity is being changed in the setup of the simulator
   which means we have to re-draw the element, and using the API doesn't make sense for these
@@ -273,8 +278,18 @@ const InfectiousMatterContainer = (props) => {
   };
 
   //TODO All simulation changes in this code...
-  const onStepEnter = ({ element, data, direction }) => {    
+  const onStepEnter = ({ element, data, direction }) => {
     console.log(data);
+
+    if (data == 1) {
+      setReveal_1(true)
+    }
+    if (data == 2) {
+      setReveal_2(true);
+    }
+    if (data == "show_sim") {
+      setReveal_3(true);
+    }
     if (data == "infect_agents") {
       infectAgents(1);
     }
@@ -303,36 +318,8 @@ const InfectiousMatterContainer = (props) => {
   useEffect(() => {
     InfectiousMatterAPI(
       InfectiousMatterRef,
-      { type: 'update_infection_params', payload: { per_contact_infection: perContactInfection } });
-  }, [perContactInfection])
-
-  useEffect(() => {
-    InfectiousMatterAPI(
-      InfectiousMatterRef,
-      { type: 'update_infection_params', payload: { infectious_period_mu: infectiousPeriodMean } });
-  }, [infectiousPeriodMean])
-
-  useEffect(() => {
-    InfectiousMatterAPI(
-      InfectiousMatterRef,
-      { type: 'update_mask_transmission_params', payload: { self_protection: maskSelfProtection } });
-  }, [maskSelfProtection])
-
-  useEffect(() => {
-    InfectiousMatterAPI(
-      InfectiousMatterRef,
-      { type: 'update_mask_transmission_params', payload: { others_protection: maskOthersProtection } });
-  }, [maskOthersProtection])
-
-  useEffect(() => {
-    InfectiousMatterAPI(
-      InfectiousMatterRef,
       { type: 'update_movement_scale', payload: { movement_scale: movementScale } });
   }, [movementScale])
-
-  useEffect(() => {
-    InfectiousMatterAPI(InfectiousMatterRef, { type: 'set_num_mask', payload: { num_masked: numMasked } });
-  }, [numMasked]);
 
   useEffect(() => {
     InfectiousMatterAPI(InfectiousMatterRef, { type: 'set_pop_size', payload: { pop_size: popSize } });
@@ -341,7 +328,7 @@ const InfectiousMatterContainer = (props) => {
 
   return (
   <div className="App">
-    <Scrollama onStepEnter={onStepEnter} debug>
+    <Scrollama offset={0.5} onStepEnter={onStepEnter} debug>
       <Step data={1} key={1}>
         <Container className={classes.headingPanel}>
           <Typography variant="h2" component="h2" gutterBottom>
@@ -349,26 +336,24 @@ const InfectiousMatterContainer = (props) => {
           </Typography>
 
           <BylineComponent date="April 11th, 2021" />
-
-          <Zoom in={true}>
+          <Grow in={reveal_1}>
             <Container className={classes.introFooter}>
                 <Typography variant="h5" gutterBottom>
                   A year ago, I built <Link color="inherit" href="https://infectiousmatter.com">InfectiousMatter</Link> to help folks gain an intuition for disease transmission dynamics without having to wait and
                   learn from our own mistakes. A year later, we've all unfortunately learned more than expected.
                 </Typography>
-
-                <Link color="inherit" href="https://infectiousmatter.com">
-                  <img src="static/teaser.png" height="300" />
-                </Link>
+                  <Link color="inherit" href="https://infectiousmatter.com">
+                    <img src="static/teaser.png" height="300" />
+                  </Link>
             </Container>
-          </Zoom>
+          </Grow>
+
 
         </Container>
       </Step>
 
       <Step data={2} key={2}>
         <Container className={classes.contentPanel}>
-
           <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom className={classes.contentPanel}>
               Now we have multiple vaccines being administered around the world at (all things considered) incredible speeds. We're truely racing
@@ -376,12 +361,50 @@ const InfectiousMatterContainer = (props) => {
               the decisions we collectively make in the next few months.
             </Typography>
           </Container>
+          
+          <Slide in={reveal_2}>
+            <Container className={classes.subPanel}>
+              <Typography variant="h5" gutterBottom className={classes.subPanels}>
+                Throughout the pandemic, limiting transmission has been critical to avoiding overwhelming our
+                healthcare systems. While that is still the true, we have even more to gain (or to lose) by making
+                hard choices in our final push towards a return to normalcy.
+              </Typography>
+            </Container>
+          </Slide>
 
+        </Container>
+      </Step>
+
+      <Step data={123} key={123}>
+        <Container>
           <Container className={classes.subPanel}>
-            <Typography variant="h5" gutterBottom className={classes.contentPanel}>
-              At the start of (and throughout) the pandemic, limiting transmission has been critical to avoiding overwhelming our
-              healthcare systems. Of course that is still the case, but now we have even more to gain (or to lose) by making
-              hard choices in our final push towards a return to normalcy.
+            <Typography variant="h5" gutterBottom>
+              What is herd immunity anyway? 
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+                Roughly speaking, it's the level of immunity that will prevent a new epidemic from spreading through the susceptible individuals in a population. 
+                The amount of immunity needed depends on many details of the pathogen and the population. For SARS-CoV-2, we likely need between 70% and 80% of people vaccinated or otherwise immune. 
+            </Typography>
+
+            <Typography variant="h6" gutterBottom>
+                However, our extreme focus on immunization is missing a major part of the challenge we're facing. 
+            </Typography>
+
+            <Typography variant="body1" gutterBottom>
+              Don't get me wrong, vaccination absolutely deserves the attention and effort it's getting right now.
+              But it isn't our only hurdle left. With a large increase in infections here in Michigan and around the world,
+              our ability to control disease spread just by reaching herd immunity levels is not looking good. 
+            </Typography>
+
+          </Container>
+        </Container>  
+      </Step> 
+
+      <Step data={"show_sim"}>
+        <Container className={classes.subPanel}>
+          <Container>
+            <Typography variant="h5" gutterBottom>
+              Building an Intuition for Herd Immunity
             </Typography>
           </Container>
         </Container>
@@ -391,20 +414,25 @@ const InfectiousMatterContainer = (props) => {
         <Container className={classes.stickyContent}>
           <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
             <Grid item>
-              <Card className={classes.sim_paper}>
-                <InfectiousMatterSimulation
-                  InfectiousMatterRef={InfectiousMatterRef}
-                  InfectiousMatterAPI={InfectiousMatterAPI}
-                  redraw_trigger={redraw_trigger}
-                  setWorldReadyTrigger={setWorldReadyTrigger}
-                  numMasked={numMasked}
-                  locationImmunity={locationImmunity}
-                  popSize={popSize}
-                />
-              </Card>
+            <Zoom in={reveal_3}>
+                <Card className={classes.sim_paper}>
+
+                    <InfectiousMatterSimulation
+                      InfectiousMatterRef={InfectiousMatterRef}
+                      InfectiousMatterAPI={InfectiousMatterAPI}
+                      redraw_trigger={redraw_trigger}
+                      setWorldReadyTrigger={setWorldReadyTrigger}
+                      locationImmunity={locationImmunity}
+                      popSize={popSize}
+                    />
+
+                </Card>
+              </Zoom>
+
             </Grid>
           </Grid>
         </Container>
+
       </Step>
 
       <Step data={"infect_agents"} key={4}>

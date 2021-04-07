@@ -6,7 +6,7 @@ const Matter = require('matter-js');
 const Viva = require('vivagraphjs');
 
 
-const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, numMasked, locationImmunity, popSize}) => {
+const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger, setWorldReadyTrigger, locationImmunity, popSize}) => {
     const sim_div = useRef(null);
 
     const setup_world = (locationImmunity) => {
