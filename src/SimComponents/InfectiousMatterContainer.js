@@ -23,31 +23,32 @@ import { Scrollama, Step } from 'react-scrollama';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 0,
-    minWidth: 800,
+    minWidth: 600,
     position: 'relative',
   },
   Typography: {
 
   },
   headingPanel: {
-    height: "100vh",
-    minHeight: "600px",
     marginTop: "50vh",
   },
   contentPanel: {
-    height: "100vh",
-    minHeight: "200px",
+    minHeight: "80vh",
   },
   subPanel: {
-    height: "20vh",
-    minHeight:300,
+    marginTop:"10vh",
+    minHeight: "20vh",
   },
   introFooter: {
     marginTop: "10vh",
   },
   stickyContent: {
+    marginTop:"2vh",
     position: "sticky",
     top: 0,
+  },
+  topPadding: {
+    marginTop:"15px",
   },
   sim_paper: {
     height: 160,
@@ -279,6 +280,7 @@ const InfectiousMatterContainer = (props) => {
 
   //TODO All simulation changes in this code...
   const onStepEnter = ({ element, data, direction }) => {
+    if (direction == "up") return;
     console.log(data);
 
     if (data == 1) {
@@ -328,7 +330,7 @@ const InfectiousMatterContainer = (props) => {
 
   return (
   <div className="App">
-    <Scrollama offset={0.5} onStepEnter={onStepEnter} debug>
+    <Scrollama offset={0.45} onStepEnter={onStepEnter} debug>
       <Step data={1} key={1}>
         <Container className={classes.headingPanel}>
           <Typography variant="h2" component="h2" gutterBottom>
@@ -336,14 +338,14 @@ const InfectiousMatterContainer = (props) => {
           </Typography>
 
           <BylineComponent date="April 11th, 2021" />
-          <Grow in={reveal_1}>
-            <Container className={classes.introFooter}>
+          <Grow in={true}>
+            <Container className={classes.subPanel}>
                 <Typography variant="h5" gutterBottom>
                   A year ago, I built <Link color="inherit" href="https://infectiousmatter.com">InfectiousMatter</Link> to help folks gain an intuition for disease transmission dynamics without having to wait and
                   learn from our own mistakes. A year later, we've all unfortunately learned more than expected.
                 </Typography>
                   <Link color="inherit" href="https://infectiousmatter.com">
-                    <img src="static/teaser.png" height="300" />
+                    <img src="static/teaser.png" height="200" />
                   </Link>
             </Container>
           </Grow>
@@ -353,24 +355,22 @@ const InfectiousMatterContainer = (props) => {
       </Step>
 
       <Step data={2} key={2}>
-        <Container className={classes.contentPanel}>
+        <Container>
           <Container className={classes.subPanel}>
-            <Typography variant="h5" gutterBottom className={classes.contentPanel}>
+            <Typography variant="h5" gutterBottom className={classes.subPanel}>
               Now we have multiple vaccines being administered around the world at (all things considered) incredible speeds. We're truely racing
               towards <i>herd immunity</i>. But how fast we get there and how many lives are saved along the way depend on
               the decisions we collectively make in the next few months.
             </Typography>
           </Container>
           
-          <Slide in={reveal_2}>
-            <Container className={classes.subPanel}>
-              <Typography variant="h5" gutterBottom className={classes.subPanels}>
-                Throughout the pandemic, limiting transmission has been critical to avoiding overwhelming our
-                healthcare systems. While that is still the true, we have even more to gain (or to lose) by making
-                hard choices in our final push towards a return to normalcy.
-              </Typography>
-            </Container>
-          </Slide>
+          <Container className={classes.subPanel}>
+            <Typography variant="h5" gutterBottom className={classes.subPanels}>
+              Throughout the pandemic, limiting transmission has been critical to avoiding overwhelming our
+              healthcare systems. While that is still the true, we have even more to gain (or to lose) by making
+              hard choices in our final push towards a return to normalcy.
+            </Typography>
+          </Container>
 
         </Container>
       </Step>
@@ -384,6 +384,7 @@ const InfectiousMatterContainer = (props) => {
             <Typography variant="body1" gutterBottom>
                 Roughly speaking, it's the level of immunity that will prevent a new epidemic from spreading through the susceptible individuals in a population. 
                 The amount of immunity needed depends on many details of the pathogen and the population. For SARS-CoV-2, we likely need between 70% and 80% of people vaccinated or otherwise immune. 
+                There was a <Link href="https://www.npr.org/sections/health-shots/2021/02/18/967462483/how-herd-immunity-works-and-what-stands-in-its-way">really neat interactive</Link> on NPR that goes into more detail about what herd immunity is, and how it's affected by the more transmissible variants now circulating. 
             </Typography>
 
             <Typography variant="h6" gutterBottom>
@@ -401,10 +402,23 @@ const InfectiousMatterContainer = (props) => {
       </Step> 
 
       <Step data={"show_sim"}>
-        <Container className={classes.subPanel}>
-          <Container>
+        <Container>
+          <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom>
               Building an Intuition for Herd Immunity
+            </Typography>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              Let's use this interactive epidemic simulator to build our intuition for what herd immunity is, and what it isn't. As you scroll, you'll see a simulation appear where lots of grey balls are bouncing around in boxes. 
+              These bouncing balls represent individuals, and each box represents a different independent community. If you missed the <Link href="https://infectiousmatter.com">original walk-through for InfectiousMatter</Link>, definitely check it out for a longer introduction to this kind
+              of model of disease dynamics!
+            </Typography>
+
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              You might notice that there are different borders on some of the bouncing balls. The dark border indicates <b>Susceptible</b> individuals, while the lighter border depicts <b>Immune</b> individuals. 
+            </Typography>
+
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              The level of immunity in a particular community (i.e., box) is increasing as you move from the left (at 10% immune) to the far right (90% immunity). 
             </Typography>
           </Container>
         </Container>
@@ -436,41 +450,93 @@ const InfectiousMatterContainer = (props) => {
       </Step>
 
       <Step data={"infect_agents"} key={4}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            TODO Trigger 1: Automatically infect someone in each location
-          </Typography>
+        <Container>
+          <Container className={classes.subPanel}>
+            <Typography variant="h5" gutterBottom>
+              Introducing a Single Infection
+            </Typography>
+
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+             As you keep scrolling, you'll see a single individual turn red in each of the communities. This is an <b>Infected</b> agent that is capable of spreading infection to other susceptible individuals. 
+             When infected agents recover, they retain a red border so you can easily see how big the epidemic was in each community. 
+            </Typography>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              This simulation is running live in your browser window, and randomness means each time you visit the page something slightly different will happen. Hopefully you could see that the 
+              pathogen doesn't really take hold in communities with high levels of immunity.
+            </Typography>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              At the end of this walk-through, you'll have a chance to re-run this simulation and manipulate some parameters to get a feeling for how they affect the pathogen spread!
+            </Typography>
+
+            <Typography variant="h6" gutterBottom className={classes.topPadding}>
+              TODO: Add screenshots of many trials?
+            </Typography>
+          </Container>
         </Container>
+
+
       </Step>
 
       <Step data={"movement_reinfect"} key={5}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            TODO Trigger 2: Show how increasing agent movement increases spread across the board
-          </Typography>
+        <Container className={classes.headingPanel}>
+          <Container>
+          <Typography variant="h5" gutterBottom>
+                Relaxed Social Distancing
+              </Typography>
+
+              <Typography variant="body1" gutterBottom className={classes.topPadding}>
+                Pandemic burnout is real. And if you mix that with the nice weather, increasingly accessible vaccines, and easing restrictions, it's easy to imagine people also starting to relax their
+                own cautious behaviors. 
+              </Typography>
+
+          </Container>
         </Container>
       </Step>
       <Step data={"infect_agents"} key={12}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            and infect...
+        <Container>
+        <Container>
+          <Typography variant="h5" gutterBottom className={classes.topPadding}>
+            <br/>
+             Now let's see what happens when the same single infected agent does in our more active populations. 
           </Typography>
+
+          <Typography variant="body1" gutterBottom className={classes.topPadding}>
+             You probably noticed that more individuals ended up infected, and the pathogen might have spread in communities that were previously protected. 
+          </Typography>
+          <Typography variant="body1" gutterBottom className={classes.topPadding}>
+             That's because increasing interactions also increases the 
+             level of immunity required to protect a community. 
+          </Typography>
+
         </Container>
+        </Container>
+
       </Step>
 
       <Step data={"single_immunity"} key={6}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            TODO Trigger 3: Focus on one level of immunity (say, 50%?) -- show how it's a stochastic process
+        <Container>
+          <Container className={classes.headingPanel}>
+            <Typography variant="h5" gutterBottom className={classes.topPadding}>
+              Focusing on Intermediate Immunity
+            </Typography>
+
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+             Let's slow things down again, and set the level of immunity to be 50% in every community. I'm doing this so you can see how 
+              random chance plays a critical role in whether or not a large outbreak occurs when infections are introduced. Keep scrolling to 
           </Typography>
+
+          </Container>
         </Container>
       </Step>
       <Step data={"infect_agents"} key={17}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            trigger infecton -- 
-          </Typography>
+        <Container>
+          <Container className={classes.subPanel}>
+            <Typography>
+              Scrolling 
+            </Typography>
+          </Container>
         </Container>
+
       </Step>
       <Step data={"single_immunity"} key={8}>
         <Container className={classes.subPanel}>
