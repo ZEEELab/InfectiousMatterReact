@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "50vh",
   },
   contentPanel: {
+    marginTop: "40vh",
     minHeight: "80vh",
   },
   subPanel: {
@@ -530,32 +531,59 @@ const InfectiousMatterContainer = (props) => {
       </Step>
       <Step data={"infect_agents"} key={17}>
         <Container>
-          <Container className={classes.subPanel}>
-            <Typography>
-              Scrolling 
+          <Container className={classes.topPadding}>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              Scrolling here to infect a single agent in each population again, you'll hopefully see that some communities remain almost entirely untouched while others have large outbreaks. 
             </Typography>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              Remember that each community has the same amount of immunity, so the differences between outbreaks is entirely driven by chance! 
+            </Typography>
+
+            <div className={classes.subPanel}>
+              <Typography variant="h5" gutterBottom >
+                This is precisely when small changes in behavior can have HUGE effects on the severity of an outbreak. 
+              </Typography>
+
+
+            </div>
+
+
           </Container>
         </Container>
 
       </Step>
       <Step data={"single_immunity"} key={8}>
-        <Container className={classes.subPanel}>
-          <Typography>
-            TODO Trigger 3: show how increasing number of infections increases probability of epidemic, even with higher levels of immunity
+      <Container>
+          <Container>
+            <Typography variant="h5" gutterBottom className={classes.topPadding}>
+              For Example
+            </Typography>
+
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              Even a slight increase in the number of infections that are introduced to communities can shift the balance towards larger outbreaks. 
           </Typography>
+
+          </Container>
         </Container>
       </Step>
       <Step data={"infect_3_agents"} key={7}>
-        <Container className={classes.contentPanel}>
-          <Typography>
-            TODO Trigger 3: show how increasing number of infections increases probability of epidemic, even with higher levels of immunity
-          </Typography>
+        <Container>
+          <Container>
+            <Typography>
+              Just going from 1 to 3 infected individuals, the outbreaks are substantially larger!
+            </Typography>
+          </Container>
         </Container>
       </Step>
-      
-
-
     </Scrollama>
+    <Container className={classes.contentPanel}>
+        <Container>
+        <Typography variant="h4" gutterBottom>
+                Instead of relaxing in the final stretch, we should try to be extra cautious. Small changes can make huge differences. 
+          </Typography>
+        </Container>
+    </Container>
+
 
 </div>)
 }
