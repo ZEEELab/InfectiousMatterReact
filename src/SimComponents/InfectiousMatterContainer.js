@@ -317,6 +317,8 @@ const InfectiousMatterContainer = (props) => {
       setReveal_2(true);
     }
     if (data == "show_sim") {
+      resetSimulation("none");
+      setMovementScale(2.0);
       setReveal_3(true);
     }
     if (data == "infect_agents") {
@@ -557,7 +559,7 @@ const InfectiousMatterContainer = (props) => {
                 </Typography>
                 <Typography variant="body1" gutterBottom className={classes.topPadding}>
                   Each row is one time through the simulation you're running live in the browser. This is just meant to
-                  convey the overall patterns, not be a detailed comparison. 
+                  convey the overall patterns, not be a side-by-side comparison. 
                 </Typography>
 
               </div>
@@ -596,7 +598,7 @@ const InfectiousMatterContainer = (props) => {
 
             <div className={classes.subPanel}>
               <Typography variant="h5" gutterBottom >
-                This is precisely when small changes in behavior can have HUGE effects on the severity of an outbreak! 
+                This is precisely why small changes in behavior can have HUGE effects on the severity of an outbreak when we are approaching herd immunity! 
               </Typography>
             </div>
 
@@ -648,7 +650,7 @@ const InfectiousMatterContainer = (props) => {
                   <Typography variant="body1" gutterBottom className={classes.topPadding}>
 
                   You can see that even a small change in the number of infections leads to larger and more frequent 
-                  outbreaks. For example, notice how many populations avoided outbreaks at all on the left!
+                  outbreaks. For example, notice how many populations completely avoided outbreaks on the left!
                 </Typography>
               </div>
             </Zoom>
