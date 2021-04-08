@@ -310,10 +310,10 @@ const InfectiousMatterContainer = (props) => {
     if (direction == "up") return;
     console.log(data);
 
-    if (data == 1) {
+    if (data == "show_movement_fig") {
       setReveal_1(true)
     }
-    if (data == 2) {
+    if (data == "show_1_v_3_fig") {
       setReveal_2(true);
     }
     if (data == "show_sim") {
@@ -379,7 +379,7 @@ const InfectiousMatterContainer = (props) => {
                   learn from our own mistakes. A year later, we've all unfortunately learned more than expected.
                 </Typography>
                   <Link color="inherit" href="https://infectiousmatter.com">
-                    <img src="static/teaser.png" height="200" />
+                    <img src="static/teaser.png" width="80%" />
                   </Link>
             </Container>
           </Grow>
@@ -504,9 +504,6 @@ const InfectiousMatterContainer = (props) => {
               At the end of this walk-through, you'll have a chance to re-run this simulation and manipulate some parameters to get a feeling for how they affect the pathogen spread!
             </Typography>
 
-            <Typography variant="h6" gutterBottom className={classes.topPadding}>
-              TODO: Add screenshots of many trials?
-            </Typography>
           </Container>
         </Container>
 
@@ -528,34 +525,55 @@ const InfectiousMatterContainer = (props) => {
           </Container>
         </Container>
       </Step>
+
+
+
       <Step data={"infect_agents"} key={12}>
         <Container>
-        <Container>
-          <Typography variant="h5" gutterBottom className={classes.topPadding}>
-            <br/>
-             Now let's see what happens when the same single infected agent does in our more active populations. 
-          </Typography>
+          <Container>
+            <Typography variant="h5" gutterBottom className={classes.topPadding}>
+              <br/>
+              Now let's see what happens when the same single infected agent does in our more active populations. 
+            </Typography>
 
-          <Typography variant="body1" gutterBottom className={classes.topPadding}>
-             You probably noticed that more individuals ended up infected, and the pathogen might have spread in communities that were previously protected. 
-          </Typography>
-          <Typography variant="body1" gutterBottom className={classes.topPadding}>
-             That's because increasing interactions also increases the 
-             amount of immunity required to protect a community. 
-          </Typography>
-
-          <Typography variant="h6" gutterBottom className={classes.topPadding}>
-              TODO: Add screenshots of many trials?
-          </Typography>
-
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              You probably noticed that more individuals ended up infected, and the pathogen might have spread in communities that were previously protected. 
+            </Typography>
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              That's because increasing interactions also increases the 
+              amount of immunity required to protect a community. 
+            </Typography>
+          </Container>
         </Container>
-        </Container>
-
       </Step>
+
+      <Step data={"show_movement_fig"}>
+        <Container className={classes.contentPanel}>
+          <Container>
+            <Typography variant="h6" gutterBottom className={classes.topPadding}>
+              Illustration of Reruns
+            </Typography>
+
+            <Zoom in={reveal_1}>
+              <div>
+                <img src="static/normal_vs_high_movement.png" width="80%" className={classes.topPadding}/>
+                <Typography variant="body1" gutterBottom className={classes.topPadding}>
+                  Here I just ran the scenario we started with (where individuals were moving <i>normally</i>) and the last one (where
+                  individuals had a higher rate of movement depicting relaxed social distancing) six times and stacked them up so you could
+                  quickly see the differences! Notice how the level of immunity required to prevent most outbreaks shifts when social distancing is relaxed.
+                </Typography>
+              </div>
+            </Zoom>
+          </Container>
+        </Container>
+      </Step>
+
+
+
 
       <Step data={"single_immunity"} key={6}>
         <Container>
-          <Container className={classes.headingPanel}>
+          <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom className={classes.topPadding}>
               Focusing on Intermediate Immunity
             </Typography>
@@ -609,12 +627,37 @@ const InfectiousMatterContainer = (props) => {
             <Typography>
               Just going from 1 to 3 infected individuals, the outbreaks are substantially larger!
             </Typography>
-            <Typography variant="h6" gutterBottom className={classes.topPadding}>
-              TODO: Add screenshots of many trials? (both with 1 and with 3)
-            </Typography>
           </Container>
         </Container>
       </Step>
+
+
+
+      <Step data={"show_1_v_3_fig"}>
+        <Container className={classes.contentPanel}>
+          <Container>
+            <Typography variant="h6" gutterBottom className={classes.topPadding}>
+              Illustration of Reruns
+            </Typography>
+
+            <Zoom in={reveal_2}>
+              <div>
+                <img src="static/1_vs_3_infections.png" width="80%" className={classes.topPadding}/>
+                <Typography variant="body1" gutterBottom className={classes.topPadding}>
+                  Now we've fixed the proportion of immune individuals at 50%, and instead restarted the simulation six times either infecting a single 
+                  individual, or 3 individuals. You can see that even a small change in the number of infections we seed leads to larger and more frequent 
+                  outbreaks. 
+                </Typography>
+              </div>
+            </Zoom>
+          </Container>
+        </Container>
+      </Step>
+
+
+
+
+
 
       <Step>
       <Container className={classes.contentPanel}>
