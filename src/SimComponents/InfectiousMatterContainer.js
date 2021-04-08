@@ -63,7 +63,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom:"1vh",
-
+  },
+  slider: {
+    minWidth:150,
   },
   sim_card:{
     minWidth:760,
@@ -351,7 +353,7 @@ const InfectiousMatterContainer = (props) => {
             Our Race Towards Herd Immunity
           </Typography>
 
-          <BylineComponent date="April 11th, 2021" />
+          <BylineComponent date="April 9th, 2021" />
         </Container>
       </Step>
 
@@ -526,7 +528,7 @@ const InfectiousMatterContainer = (props) => {
           </Typography>
           <Typography variant="body1" gutterBottom className={classes.topPadding}>
              That's because increasing interactions also increases the 
-             level of immunity required to protect a community. 
+             amount of immunity required to protect a community. 
           </Typography>
 
           <Typography variant="h6" gutterBottom className={classes.topPadding}>
@@ -546,7 +548,7 @@ const InfectiousMatterContainer = (props) => {
             </Typography>
 
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-             Let's slow things down again, and set the level of immunity to be 50% in every community. I'm doing this so you can see how 
+             Let's slow things down and set the level of immunity to be 50% in every community. I'm doing this so you can see how 
               random chance plays a critical role in whether or not a large outbreak occurs when infections are introduced. Keep scrolling to 
           </Typography>
 
@@ -605,7 +607,8 @@ const InfectiousMatterContainer = (props) => {
       <Container className={classes.contentPanel}>
         <Container>
         <Typography variant="h4" gutterBottom>
-                Instead of relaxing in the final stretch, we should try to be extra cautious. Small changes can make huge differences. 
+                Instead of letting our guard down in this home stretch, we should be extra cautious. Small effects are amplified as we approach herd immunity, and that can 
+                help us get back to normal faster (or not). 
           </Typography>
         </Container>
       </Container>
@@ -616,12 +619,52 @@ const InfectiousMatterContainer = (props) => {
     <Container>
       <Container>
       <Typography variant="h6" gutterBottom>
-        Here are some controls you can play with to keep building your intuition about herd immunity. 
-        </Typography>
+        Here are some controls you can play with to keep building your intuition about herd immunity!
+      </Typography>
+
+      <Card>
+      <List component="div" dense> 
+        <ListSubheader> Population Settings</ListSubheader>
+        <ListItem>
+          <ListItemText>Individual Movement</ListItemText>
+          <ListItemSecondaryAction className={classes.slider}>
+          <Slider
+                value={movementScale}
+                valueLabelDisplay="off"
+                onChange={handleMovementScaleChange}
+                step={0.25}
+                min={0}
+                max={10}
+              />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListSubheader>Reset Population</ListSubheader>
+        <ListItem>
+          <ListItemText>Reset With Immunity Gradient</ListItemText>
+          <ListItemSecondaryAction>
+            <Button variant="contained" onClick={() => {resetSimulation()}}>Go</Button>
+          </ListItemSecondaryAction>
+        </ListItem>
+
+        <ListItem>
+          <ListItemText>Reset To 50% Immunity</ListItemText>
+          <ListItemSecondaryAction>
+            <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Go</Button>
+          </ListItemSecondaryAction>
+        </ListItem>
+
+        <ListItem>
+          <ListItemText>Reset To 80% Immunity</ListItemText>
+          <ListItemSecondaryAction>
+            <Button variant="contained" onClick={() => {resetImmunity([0.8, 0.8, 0.8, 0.8, 0.8])}}>Go</Button>
+          </ListItemSecondaryAction>
+        </ListItem>
+      </List>
+      </Card>
+
+        {/*
         <Grid container direction="column" justify="space-around" alignItems="center" spacing={10}>
           <Grid item>
-          <Card>
-
               <Typography id="motion_lbl">
                 Motion
               </Typography>
@@ -634,37 +677,38 @@ const InfectiousMatterContainer = (props) => {
                 min={0}
                 max={10}
               />
-              <Grid container direction="column" alignItems="center" spacing={3} className={classes.root} >
+
+              <Grid container direction="column" justify="space-around" alignItems="center" spacing={2}>
                 <Grid item>
                   <Button variant="contained" onClick={() => {resetSimulation()}}>Reset Immunity Gradient</Button>
                 </Grid>
 
                 <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset 50% Immunity</Button>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset To 50% Immunity</Button>
                 </Grid>
 
                 <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset 70% Immunity</Button>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset To 70% Immunity</Button>
                 </Grid>
               </Grid>
 
-              <Grid container direction="row" spacing={3}>
+              <Grid container direction="row" justify="center" alignItems="center" spacing={10}>
                 <Grid item>
-                  <Button variant="contained" onClick={()=>{infectAgents(1)}}>Infect 1</Button>
+                  <Button variant="contained" onClick={()=>{infectAgents(1)}}>Infect 1 Individual</Button>
                 </Grid>
 
                 <Grid item>
-                <Button variant="contained" onClick={()=>{infectAgents(2)}}>Infect 2</Button>
+                <Button variant="contained" onClick={()=>{infectAgents(2)}}>Infect 2 Individuals</Button>
                 </Grid>
 
                 <Grid item>
-                <Button variant="contained" onClick={()=>{infectAgents(3)}}>Infect 3</Button>
+                <Button variant="contained" onClick={()=>{infectAgents(3)}}>Infect 3 Individuals</Button>
                 </Grid>
 
               </Grid>
-          </Card>
         </Grid>
       </Grid>
+    */}
     </Container>
     </Container>
       </Step>
