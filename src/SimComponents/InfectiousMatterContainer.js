@@ -13,7 +13,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/Replay';
-import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -686,7 +686,7 @@ const InfectiousMatterContainer = (props) => {
           <ListItemText primary="Infect One Individual" secondary="per population"></ListItemText>
           <ListItemSecondaryAction>
             <IconButton size="small" onClick={()=>{infectAgents(1)}} color="secondary">
-              <SentimentVeryDissatisfiedIcon />
+              <FlashOnIcon />
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
@@ -694,7 +694,7 @@ const InfectiousMatterContainer = (props) => {
           <ListItemText primary="Infect Two Individuals" ></ListItemText>
           <ListItemSecondaryAction>
             <IconButton size="small" onClick={()=>{infectAgents(2)}} color="secondary">
-              <SentimentVeryDissatisfiedIcon />
+              <FlashOnIcon />
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
@@ -702,7 +702,7 @@ const InfectiousMatterContainer = (props) => {
           <ListItemText primary="Infect Three Individuals"></ListItemText>
           <ListItemSecondaryAction>
             <IconButton size="small" onClick={()=>{infectAgents(3)}} color="secondary">
-              <SentimentVeryDissatisfiedIcon />
+              <FlashOnIcon />
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
