@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useReducer, useState, useLayoutEffect } from 
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Zoom from '@material-ui/core/Zoom';
+import Paper from '@material-ui/core/Paper';
+
 import Grow from '@material-ui/core/Grow';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -29,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 0,
     minWidth: 600,
-    position: 'relative',
   },
   Typography: {
 
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "10vh",
   },
   stickyContent: {
-    marginTop:"2vh",
+    marginTop:"3vh",
     position: "sticky",
     top: 0,
   },
@@ -59,7 +60,14 @@ const useStyles = makeStyles((theme) => ({
   sim_paper: {
     height: 160,
     width: 760,
-    textAlign: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom:"1vh",
+
+  },
+  sim_card:{
+    minWidth:760,
+    padding:3,
   }
 }));
 
@@ -344,7 +352,12 @@ const InfectiousMatterContainer = (props) => {
           </Typography>
 
           <BylineComponent date="April 11th, 2021" />
-          <Grow in={true}>
+        </Container>
+      </Step>
+
+      <Step data={2} key={2}>
+        <Container>
+        <Grow in={true}>
             <Container className={classes.subPanel}>
                 <Typography variant="h5" gutterBottom>
                   A year ago, I built <Link color="inherit" href="https://infectiousmatter.com">InfectiousMatter</Link> to help folks gain an intuition for disease transmission dynamics without having to wait and
@@ -356,15 +369,9 @@ const InfectiousMatterContainer = (props) => {
             </Container>
           </Grow>
 
-
-        </Container>
-      </Step>
-
-      <Step data={2} key={2}>
-        <Container>
           <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom className={classes.subPanel}>
-              Now we have multiple vaccines being administered around the world at (all things considered) incredible speeds. We're truely racing
+              Now we have multiple vaccines being administered around the world at incredible speeds (all things considered). We're truly racing
               towards <i>herd immunity</i>. But how fast we get there and how many lives are saved along the way depend on
               the decisions we collectively make in the next few months.
             </Typography>
@@ -372,13 +379,14 @@ const InfectiousMatterContainer = (props) => {
           
           <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom className={classes.subPanels}>
-              Throughout the pandemic, limiting transmission has been critical to avoiding overwhelming our
-              healthcare systems. While that is still the true, we have even more to gain (or to lose) by making
+              Throughout the pandemic, limiting transmission has been critical to avoid overwhelming our
+              healthcare systems. While that is still the true, we have even more to gain (or lose) by making
               hard choices in our final push towards a return to normalcy.
             </Typography>
           </Container>
 
         </Container>
+  
       </Step>
 
       <Step data={123} key={123}>
@@ -388,19 +396,19 @@ const InfectiousMatterContainer = (props) => {
               What is herd immunity anyway? 
             </Typography>
             <Typography variant="body1" gutterBottom>
-                Roughly speaking, it's the level of immunity that will prevent a new epidemic from spreading through the susceptible individuals in a population. 
-                The amount of immunity needed depends on many details of the pathogen and the population. For SARS-CoV-2, we likely need between 70% and 80% of people vaccinated or otherwise immune. 
+                Roughly speaking, it's the level of immunity that will prevent a pathogen from spreading through a population. 
+                The proportion of immune people needed depends on several details of the pathogen and the population. For SARS-CoV-2, we'll probably need to reach between 70% - 80% immune. 
                 There was a <Link href="https://www.npr.org/sections/health-shots/2021/02/18/967462483/how-herd-immunity-works-and-what-stands-in-its-way">really neat interactive</Link> on NPR that goes into more detail about what herd immunity is, and how it's affected by the more transmissible variants now circulating. 
             </Typography>
 
             <Typography variant="h6" gutterBottom>
-                However, our extreme focus on immunization is missing a major part of the challenge we're facing. 
+                However, our extreme focus on immunization is overshadowing a major part of the challenge we're facing. 
             </Typography>
 
             <Typography variant="body1" gutterBottom>
               Don't get me wrong, vaccination absolutely deserves the attention and effort it's getting right now.
               But it isn't our only hurdle left. With a large increase in infections here in Michigan and around the world,
-              our ability to control disease spread just by reaching herd immunity levels is not looking good. 
+              our ability to s disease spread just by reaching herd immunity will be major challenge.
             </Typography>
 
           </Container>
@@ -411,7 +419,7 @@ const InfectiousMatterContainer = (props) => {
         <Container>
           <Container className={classes.subPanel}>
             <Typography variant="h5" gutterBottom>
-              Building an Intuition for Herd Immunity
+              Exploring Herd Immunity
             </Typography>
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
               Let's use this interactive epidemic simulator to build our intuition for what herd immunity is, and what it isn't. As you scroll, you'll see a simulation appear where lots of grey balls are bouncing around in boxes. 
@@ -424,7 +432,7 @@ const InfectiousMatterContainer = (props) => {
             </Typography>
 
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              The level of immunity in a particular community (i.e., box) is increasing as you move from the left (at 10% immune) to the far right (90% immunity). 
+              The level of immunity in a particular community (i.e., box) is a gradient that increases as you move from the left (at 10% immune) to the far right (90% immunity). 
             </Typography>
           </Container>
         </Container>
@@ -432,9 +440,14 @@ const InfectiousMatterContainer = (props) => {
 
       <Step data={3} key={3}>
         <Container className={classes.stickyContent}>
-          <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
-            <Grid item>
-            <Zoom in={reveal_3}>
+        <Zoom in={reveal_3}>
+          <Card elevation={5} className={classes.sim_card}>
+          <Grid container className={classes.root} alignItems="center" direction="column" justify="flex-start" spacing={0} margin={10}>
+
+            <Grid item >
+              <img src="static/legend.png" width={400} />
+            </Grid>
+            <Grid item >
                 <Card className={classes.sim_paper}>
 
                     <InfectiousMatterSimulation
@@ -447,10 +460,12 @@ const InfectiousMatterContainer = (props) => {
                     />
 
                 </Card>
-              </Zoom>
-
             </Grid>
           </Grid>
+          </Card>
+
+          </Zoom>
+
         </Container>
 
       </Step>
@@ -585,57 +600,54 @@ const InfectiousMatterContainer = (props) => {
           </Container>
         </Container>
       </Step>
-    </Scrollama>
-    <Container className={classes.contentPanel}>
+
+      <Step>
+      <Container className={classes.contentPanel}>
         <Container>
         <Typography variant="h4" gutterBottom>
                 Instead of relaxing in the final stretch, we should try to be extra cautious. Small changes can make huge differences. 
           </Typography>
         </Container>
-    </Container>
+      </Container>
+      </Step>
 
+
+      <Step>
     <Container>
       <Container>
-      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
       <Typography variant="h6" gutterBottom>
         Here are some controls you can play with to keep building your intuition about herd immunity. 
         </Typography>
-          <Grid item alignItems="flex-start">
-          <Card className={classes.paper}>
-            <List>
-            <ListSubheader disableSticky={true}>World Settings</ListSubheader>
+        <Grid container direction="column" justify="space-around" alignItems="center" spacing={10}>
+          <Grid item>
+          <Card>
 
-            <ListItem>
-              <ListItemText id="Movement" primary="Movement Scale" />
+              <Typography id="motion_lbl">
+                Motion
+              </Typography>
               <Slider
                 value={movementScale}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="on"
+                aria-labelledby="motion_lbl"
+                valueLabelDisplay="off"
                 onChange={handleMovementScaleChange}
                 step={0.25}
                 min={0}
                 max={10}
               />
-            </ListItem>
-            <ListSubheader disableSticky={true}>Immunity Actions</ListSubheader>
-            <ListItem>
-              <Grid container direction="row" spacing={3}>
+              <Grid container direction="column" alignItems="center" spacing={3} className={classes.root} >
                 <Grid item>
-                  <Button variant="contained" onClick={() => {resetSimulation()}}>Reset Gradient</Button>
+                  <Button variant="contained" onClick={() => {resetSimulation()}}>Reset Immunity Gradient</Button>
                 </Grid>
 
                 <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset 50%</Button>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset 50% Immunity</Button>
                 </Grid>
 
                 <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset 70%</Button>
+                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset 70% Immunity</Button>
                 </Grid>
               </Grid>
-            </ListItem>
 
-            <ListSubheader disableSticky={true}>Infection Actions</ListSubheader>
-            <ListItem>
               <Grid container direction="row" spacing={3}>
                 <Grid item>
                   <Button variant="contained" onClick={()=>{infectAgents(1)}}>Infect 1</Button>
@@ -650,13 +662,14 @@ const InfectiousMatterContainer = (props) => {
                 </Grid>
 
               </Grid>
-            </ListItem>          
-          </List>
           </Card>
         </Grid>
       </Grid>
     </Container>
     </Container>
+      </Step>
+    </Scrollama>
+    
     <Container className={classes.subPanel}>
       
     </Container>
