@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop:"3vh",
     position: "sticky",
     top: 0,
+    zIndex:2000,
   },
   topPadding: {
     marginTop:"15px",
@@ -422,7 +423,7 @@ const InfectiousMatterContainer = (props) => {
             <Typography variant="body1" gutterBottom>
               Don't get me wrong, vaccination absolutely deserves the attention and effort it's getting right now.
               But it isn't our only hurdle left. With a large increase in infections here in Michigan and around the world,
-              our ability to s disease spread just by reaching herd immunity will be major challenge.
+              our ability to end disease spread just by reaching herd immunity will be a major challenge.
             </Typography>
 
           </Container>
@@ -561,7 +562,7 @@ const InfectiousMatterContainer = (props) => {
 
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
              Let's slow things down and set the level of immunity to be 50% in every community. I'm doing this so you can see how 
-              random chance plays a critical role in whether or not a large outbreak occurs when infections are introduced. Keep scrolling to 
+              random chance plays a critical role in whether or not a large outbreak occurs when infections are introduced. 
           </Typography>
 
           </Container>
@@ -571,7 +572,7 @@ const InfectiousMatterContainer = (props) => {
         <Container>
           <Container className={classes.topPadding}>
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              Scrolling here to infect a single agent in each population again, you'll hopefully see that some communities remain almost entirely untouched while others have large outbreaks. 
+              When you scrolled here, we'll automatically infect a single agent in each population again. You'll hopefully see that some communities remain almost entirely untouched while others have large outbreaks. 
             </Typography>
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
               Remember that each community has the same amount of immunity, so the differences between outbreaks is entirely driven by chance! 
@@ -579,7 +580,7 @@ const InfectiousMatterContainer = (props) => {
 
             <div className={classes.subPanel}>
               <Typography variant="h5" gutterBottom >
-                This is precisely when small changes in behavior can have HUGE effects on the severity of an outbreak. 
+                This is precisely when small changes in behavior can have HUGE effects on the severity of an outbreak! 
               </Typography>
             </div>
 
@@ -618,9 +619,18 @@ const InfectiousMatterContainer = (props) => {
       <Step>
       <Container className={classes.contentPanel}>
         <Container>
-        <Typography variant="h4" gutterBottom>
-                Instead of letting our guard down in this home stretch, we should be extra cautious. Small effects are amplified as we approach herd immunity, and that can 
-                help us get back to normal faster — or not. 
+          <Typography variant="h4" gutterBottom color="secondary">
+            Takeaway
+          </Typography>
+          <Typography variant="h6" gutterBottom className={classes.topPadding}>
+            Vaccination absolutely works as a way to reduce the number and severity of disease outbreaks. But it isn't the only 
+            ingredient needed to stop a pandemic. 
+          </Typography>
+
+          <Typography variant="h6" gutterBottom className={classes.topPadding}>
+            As we rapidly approach herd immunity, controling the spread of outbreaks that are ongoing and preventing new ones from starting will be critical. 
+            As you've now seen first hand, small effects are amplified when we're close to herd immunity, and that can 
+            help us get back to normal faster — or not. 
           </Typography>
         </Container>
       </Container>
@@ -630,10 +640,6 @@ const InfectiousMatterContainer = (props) => {
       <Step>
     <Container>
       <Container>
-      <Typography variant="h6" gutterBottom>
-        Here are some controls you can play with to keep building your intuition about herd immunity!
-      </Typography>
-
       <Card className={classes.controlCard}>
       <List component="div" dense> 
         <ListSubheader> Population Settings</ListSubheader>
@@ -654,7 +660,7 @@ const InfectiousMatterContainer = (props) => {
 
         <ListSubheader>Reset Population</ListSubheader>
         <ListItem>
-          <ListItemText>Reset With Immunity Gradient</ListItemText>
+          <ListItemText primary="Reset With Immunity Gradient" secondary="(10% - 90%)"></ListItemText>
           <ListItemSecondaryAction>
             <IconButton size="small" onClick={() => {resetSimulation()}} color="primary">
               <ReplayIcon />
@@ -708,64 +714,16 @@ const InfectiousMatterContainer = (props) => {
         </ListItem>
       </List>
       </Card>
-
-        {/*
-        <Grid container direction="column" justify="space-around" alignItems="center" spacing={10}>
-          <Grid item>
-              <Typography id="motion_lbl">
-                Motion
-              </Typography>
-              <Slider
-                value={movementScale}
-                aria-labelledby="motion_lbl"
-                valueLabelDisplay="off"
-                onChange={handleMovementScaleChange}
-                step={0.25}
-                min={0}
-                max={10}
-              />
-
-              <Grid container direction="column" justify="space-around" alignItems="center" spacing={2}>
-                <Grid item>
-                  <Button variant="contained" onClick={() => {resetSimulation()}}>Reset Immunity Gradient</Button>
-                </Grid>
-
-                <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Reset To 50% Immunity</Button>
-                </Grid>
-
-                <Grid item>
-                  <Button variant="contained" onClick={() => {resetImmunity([0.7, 0.7, 0.7, 0.7, 0.7])}}>Reset To 70% Immunity</Button>
-                </Grid>
-              </Grid>
-
-              <Grid container direction="row" justify="center" alignItems="center" spacing={10}>
-                <Grid item>
-                  <Button variant="contained" onClick={()=>{infectAgents(1)}}>Infect 1 Individual</Button>
-                </Grid>
-
-                <Grid item>
-                <Button variant="contained" onClick={()=>{infectAgents(2)}}>Infect 2 Individuals</Button>
-                </Grid>
-
-                <Grid item>
-                <Button variant="contained" onClick={()=>{infectAgents(3)}}>Infect 3 Individuals</Button>
-                </Grid>
-
-              </Grid>
-        </Grid>
-      </Grid>
-    */}
     </Container>
     </Container>
       </Step>
+      <Step>
+      <Container className={classes.subPanel}>
+      
+      </Container>
+      </Step>
     </Scrollama>
     
-    <Container className={classes.subPanel}>
-      
-    </Container>
-
-
 </div>)
 }
 
