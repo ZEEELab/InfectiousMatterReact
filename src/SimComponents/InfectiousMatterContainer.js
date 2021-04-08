@@ -391,14 +391,6 @@ const InfectiousMatterContainer = (props) => {
               the decisions we collectively make in the next few months.
             </Typography>
           </Container>
-          
-          <Container className={classes.subPanel}>
-            <Typography variant="h5" gutterBottom className={classes.subPanels}>
-              Throughout the pandemic, limiting transmission has been critical to avoid overwhelming our
-              healthcare systems. While that is still the true, we have even more to gain (or lose) by making
-              hard choices in our final push towards a return to normalcy.
-            </Typography>
-          </Container>
 
         </Container>
   
@@ -411,19 +403,19 @@ const InfectiousMatterContainer = (props) => {
               What is herd immunity anyway? 
             </Typography>
             <Typography variant="body1" gutterBottom>
-                Roughly speaking, it's the level of immunity that will prevent a pathogen from spreading through a population. 
-                The proportion of immune people needed depends on several details of the pathogen and the population. For SARS-CoV-2, we'll probably need to reach between 70% - 80% immune. 
-                There was a <Link href="https://www.npr.org/sections/health-shots/2021/02/18/967462483/how-herd-immunity-works-and-what-stands-in-its-way">really neat interactive</Link> on NPR that goes into more detail about what herd immunity is, and how it's affected by the more transmissible variants now circulating. 
+                Roughly speaking, it's the proportion of immune people needed to prevent a pathogen from spreading through a population. 
+                The exact proportion depends on several details of the pathogen and the population. For SARS-CoV-2, we'll probably need to reach between 70% - 80% immune. 
+                There was a <Link href="https://www.npr.org/sections/health-shots/2021/02/18/967462483/how-herd-immunity-works-and-what-stands-in-its-way">really neat interactive</Link> on NPR that goes into more detail about herd immunity that's worth checking out! 
             </Typography>
 
             <Typography variant="h6" gutterBottom>
-                However, our extreme focus on immunization is overshadowing a major part of the challenge we're facing. 
+                However, our extreme focus on immunization is overshadowing another major challenge. 
             </Typography>
 
             <Typography variant="body1" gutterBottom>
               Don't get me wrong, vaccination absolutely deserves the attention and effort it's getting right now.
               But it isn't our only hurdle left. With a large increase in infections here in Michigan and around the world,
-              our ability to end disease spread just by reaching herd immunity will be a major challenge.
+              our ability to end disease spread by reaching herd immunity alone will be challenging. 
             </Typography>
 
           </Container>
@@ -501,7 +493,7 @@ const InfectiousMatterContainer = (props) => {
               pathogen doesn't really take hold in communities with high levels of immunity.
             </Typography>
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              At the end of this walk-through, you'll have a chance to re-run this simulation and manipulate some parameters to get a feeling for how they affect the pathogen spread!
+              At the end of this walk-through, you'll have a chance to re-run this simulation and manipulate parameters to get a feeling for how they affect the pathogen spread!
             </Typography>
 
           </Container>
@@ -533,14 +525,14 @@ const InfectiousMatterContainer = (props) => {
           <Container>
             <Typography variant="h5" gutterBottom className={classes.topPadding}>
               <br/>
-              Now let's see what happens when the same single infected agent does in our more active populations. 
+              Now let's see what happens when we introduce a single infected individual. 
             </Typography>
 
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              You probably noticed that more individuals ended up infected, and the pathogen might have spread in communities that were previously protected. 
+              This time, you'll notice that more individuals ended up infected, and the pathogen might have spread in communities that were previously protected. 
             </Typography>
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              That's because increasing interactions also increases the 
+              That's because increasing interactions (<i>e.g.,</i> fewer masks, less social distancing) also increases the 
               amount of immunity required to protect a community. 
             </Typography>
           </Container>
@@ -556,12 +548,18 @@ const InfectiousMatterContainer = (props) => {
 
             <Zoom in={reveal_1}>
               <div>
-                <img src="static/normal_vs_high_movement.png" width="80%" className={classes.topPadding}/>
+                <img src="static/normal_vs_high_movement.png" width="60%" className={classes.topPadding}/>
                 <Typography variant="body1" gutterBottom className={classes.topPadding}>
-                  Here I just ran the scenario we started with (where individuals were moving <i>normally</i>) and the last one (where
-                  individuals had a higher rate of movement depicting relaxed social distancing) six times and stacked them up so you could
-                  quickly see the differences! Notice how the level of immunity required to prevent most outbreaks shifts when social distancing is relaxed.
+                  Here I ran the first scenario (where individuals were moving <i>normally</i>) and the last one (where
+                  individuals have a high rate of movement depicting relaxed social distancing) six times and stacked them up so you can
+                  quickly see the differences! 
+                  Notice how the level of immunity required to prevent most outbreaks shifts when social distancing is relaxed.
                 </Typography>
+                <Typography variant="body1" gutterBottom className={classes.topPadding}>
+                  Each row is one time through the simulation you're running live in the browser. This is just meant to
+                  convey the overall patterns, not be a detailed comparison. 
+                </Typography>
+
               </div>
             </Zoom>
           </Container>
@@ -615,7 +613,7 @@ const InfectiousMatterContainer = (props) => {
             </Typography>
 
             <Typography variant="body1" gutterBottom className={classes.topPadding}>
-              Even a slight increase in the number of infections that are introduced to communities can shift the balance towards larger outbreaks. 
+              Even a slight increase in the number of infections in a community can shift the balance towards larger outbreaks. 
           </Typography>
 
           </Container>
@@ -624,8 +622,8 @@ const InfectiousMatterContainer = (props) => {
       <Step data={"something"} key={7}>
         <Container>
           <Container>
-            <Typography>
-              Just going from 1 to 3 infected individuals, the outbreaks are substantially larger!
+            <Typography variant="body1" gutterBottom className={classes.topPadding}>
+              When we start with 3 infected individuals instead of 1, notice how the outbreaks are larger and more consistent. 
             </Typography>
           </Container>
         </Container>
@@ -642,11 +640,15 @@ const InfectiousMatterContainer = (props) => {
 
             <Zoom in={reveal_2}>
               <div>
-                <img src="static/1_vs_3_infections.png" width="80%" className={classes.topPadding}/>
+                <img src="static/1_vs_3_infections.png" width="60%" className={classes.topPadding}/>
                 <Typography variant="body1" gutterBottom className={classes.topPadding}>
-                  Now we've fixed the proportion of immune individuals at 50%, and instead restarted the simulation six times either infecting a single 
-                  individual, or 3 individuals. You can see that even a small change in the number of infections we seed leads to larger and more frequent 
-                  outbreaks. 
+                  In this visualization, I fixed the proportion of immune individuals at 50% and either infected a single 
+                  individual, or 3 individuals. I did this six times, and stacked them up again to help see the overall pattern.
+                  </Typography>
+                  <Typography variant="body1" gutterBottom className={classes.topPadding}>
+
+                  You can see that even a small change in the number of infections leads to larger and more frequent 
+                  outbreaks. For example, notice how many populations avoided outbreaks at all on the left!
                 </Typography>
               </div>
             </Zoom>
@@ -660,7 +662,7 @@ const InfectiousMatterContainer = (props) => {
 
 
       <Step>
-      <Container className={classes.contentPanel}>
+      <Container className={classes.subPanel}>
         <Container>
           <Typography variant="h4" gutterBottom color="secondary">
             Takeaway
@@ -675,10 +677,12 @@ const InfectiousMatterContainer = (props) => {
             As you've now seen first hand, small effects are amplified when we're close to herd immunity, and that can 
             help us get back to normal faster — or not. 
           </Typography>
+          <Typography variant="body1" gutterBottom className={classes.topPadding}>
+            And don't forget to keep scrolling to rerun this simulation with more control!
+          </Typography>
         </Container>
       </Container>
       </Step>
-
 
       <Step>
     <Container>
