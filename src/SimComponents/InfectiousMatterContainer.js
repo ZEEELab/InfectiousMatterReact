@@ -358,7 +358,7 @@ const InfectiousMatterContainer = (props) => {
 
   return (
   <div className="App">
-    <Scrollama offset={0.45} onStepEnter={onStepEnter} debug>
+    <Scrollama offset={0.5} onStepEnter={onStepEnter}>
       <Step data={1} key={1}>
         <Container className={classes.headingPanel}>
           <Typography variant="h2" component="h2" gutterBottom>
