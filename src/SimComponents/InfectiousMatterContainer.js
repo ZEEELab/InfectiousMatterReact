@@ -10,6 +10,11 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import ReplayIcon from '@material-ui/icons/Replay';
+import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
@@ -67,9 +72,16 @@ const useStyles = makeStyles((theme) => ({
   slider: {
     minWidth:150,
   },
+  controlCard: {
+    minWidth:300,
+    padding:5,
+    margin:"10vw",
+
+  },
   sim_card:{
     minWidth:760,
     padding:3,
+    zIndex:-1000,
   }
 }));
 
@@ -622,7 +634,7 @@ const InfectiousMatterContainer = (props) => {
         Here are some controls you can play with to keep building your intuition about herd immunity!
       </Typography>
 
-      <Card>
+      <Card className={classes.controlCard}>
       <List component="div" dense> 
         <ListSubheader> Population Settings</ListSubheader>
         <ListItem>
@@ -638,25 +650,60 @@ const InfectiousMatterContainer = (props) => {
               />
           </ListItemSecondaryAction>
         </ListItem>
+        <Divider/>
+
         <ListSubheader>Reset Population</ListSubheader>
         <ListItem>
           <ListItemText>Reset With Immunity Gradient</ListItemText>
           <ListItemSecondaryAction>
-            <Button variant="contained" onClick={() => {resetSimulation()}}>Go</Button>
+            <IconButton size="small" onClick={() => {resetSimulation()}} color="primary">
+              <ReplayIcon />
+            </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
 
         <ListItem>
-          <ListItemText>Reset To 50% Immunity</ListItemText>
+          <ListItemText>Reset All To 50% Immunity</ListItemText>
           <ListItemSecondaryAction>
-            <Button variant="contained" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}}>Go</Button>
+            <IconButton size="small" onClick={() => {resetImmunity([0.5, 0.5, 0.5, 0.5, 0.5])}} color="primary">
+              <ReplayIcon />
+            </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
 
         <ListItem>
-          <ListItemText>Reset To 80% Immunity</ListItemText>
+          <ListItemText>Reset All To 80% Immunity</ListItemText>
           <ListItemSecondaryAction>
-            <Button variant="contained" onClick={() => {resetImmunity([0.8, 0.8, 0.8, 0.8, 0.8])}}>Go</Button>
+            <IconButton size="small" onClick={() => {resetImmunity([0.8, 0.8, 0.8, 0.8, 0.8])}} color="primary">
+              <ReplayIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <Divider/>
+
+        <ListSubheader>Infection Actions</ListSubheader>
+        <ListItem>
+          <ListItemText primary="Infect One Individual" secondary="per population"></ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton size="small" onClick={()=>{infectAgents(1)}} color="secondary">
+              <SentimentVeryDissatisfiedIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText primary="Infect Two Individuals" ></ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton size="small" onClick={()=>{infectAgents(2)}} color="secondary">
+              <SentimentVeryDissatisfiedIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText primary="Infect Three Individuals"></ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton size="small" onClick={()=>{infectAgents(3)}} color="secondary">
+              <SentimentVeryDissatisfiedIcon />
+            </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
       </List>
