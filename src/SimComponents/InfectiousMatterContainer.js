@@ -620,7 +620,7 @@ const InfectiousMatterContainer = (props) => {
         <Container>
         <Typography variant="h4" gutterBottom>
                 Instead of letting our guard down in this home stretch, we should be extra cautious. Small effects are amplified as we approach herd immunity, and that can 
-                help us get back to normal faster (or not). 
+                help us get back to normal faster — or not. 
           </Typography>
         </Container>
       </Container>
