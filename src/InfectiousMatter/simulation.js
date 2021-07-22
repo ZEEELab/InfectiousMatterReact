@@ -1,6 +1,7 @@
 import { jStat } from 'jstat';
 import Pathogen from './pathogen.js';
 import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
+import * as myIcon from './icon.png'
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -36,6 +37,8 @@ let pathogen_colors = colormap({
     alpha: 1
 })
 
+
+
 let interpolate = require('color-interpolate');
 let pathogen_color_range = interpolate(['white']);
 
@@ -57,7 +60,7 @@ var Bounds = Matter.Bounds;
 var Mouse = Matter.Mouse;
 var MouseConstraint = Matter.MouseConstraint;
 var Events = Matter.Events;
-
+var Render = Matter.Render;
 
 var default_simulation_params = {
     sim_time_per_day:2000,
@@ -388,10 +391,16 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 
     let loc = home_location.get_random_position();
     //let new_agent_body = 
-    let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {plugin: {wrap: home_location.bounds}});
-    new_agent_body.render.fillStyle = home_location.home_color || "black";
-    new_agent_body.strokeStyle = "black";
-    new_agent_body.lineWidth = 2;
+    let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {
+        render: {sprite: {texture: myIcon, xScale: 0.5,
+        yScale: 0.5}},
+        plugin: {wrap: home_location.bounds}, 
+        
+    });
+    Matter.Body.setInertia(new_agent_body, Infinity);
+    // new_agent_body.render.fillStyle = home_location.home_color || "black";
+    // new_agent_body.strokeStyle = "black";
+    // new_agent_body.lineWidth = 2;
 
     new_agent_body.agent_object = new Agent(new_agent_body);
     new_agent_body.frictionAir = home_location.friction;
