@@ -33,12 +33,15 @@ Agent.prototype.handle_agent_contact = function(other_agent) {
 }
 
 Agent.prototype.draw_mask = function(ctx, agent_size) {
+
 	ctx.fillStyle = "#FFFFFF";
 	ctx.strokeStyle="#000000";
 	ctx.lineWidth = 1;
+	// ctx.transform(0, 0, 0, 0, 0, 1)
 	ctx.fillRect(this.body.position.x-agent_size, this.body.position.y, agent_size*2, agent_size-1);
 	ctx.strokeRect(this.body.position.x-agent_size, this.body.position.y, agent_size*2, agent_size-1);
 	ctx.stroke()
+
 
 }
 

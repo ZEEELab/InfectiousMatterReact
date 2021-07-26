@@ -2,6 +2,10 @@ import { jStat } from 'jstat';
 import Pathogen from './pathogen.js';
 import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
 import * as myIcon from './icon.png'
+import * as iconPurple from './icon_purple.png'
+import * as iconOrange from './icon_orange.png'
+import * as iconGreen from './icon_green.png'
+import * as iconYellow from './icon_yellow.png'
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -230,7 +234,7 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     
     this.state_counts[new_state] += 1;
 
-    org.render.lineWidth = 3;
+    org.render.lineWidth = 10;
     let stroke_color = org.render.strokeStyle;
     let viva_node_color;
 
@@ -390,10 +394,21 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     assert(home_location && home_location.get_random_position);
 
     let loc = home_location.get_random_position();
-    //let new_agent_body = 
+    //if home location color is...
+    let colorIcon= iconPurple
+    if (home_location.home_color === "mediumpurple"){
+        colorIcon = iconPurple
+    } else if (home_location.home_color === "lime"){
+        colorIcon = iconGreen
+    } else if (home_location.home_color === "yellow"){
+        colorIcon = iconYellow
+    } else{
+        colorIcon = iconOrange
+    }
+
     let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {
-        render: {sprite: {texture: myIcon, xScale: 0.5,
-        yScale: 0.5}},
+        render: {sprite: {texture: colorIcon, xScale: 0.15,
+        yScale: 0.15}},
         plugin: {wrap: home_location.bounds}, 
         
     });
@@ -409,7 +424,6 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
     new_agent_body.agent_object.viva_color = home_location.viva_node_color
-
     
     home_location.add_agent(new_agent_body.agent_object);
 
