@@ -3,9 +3,25 @@ import Pathogen from './pathogen.js';
 import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
 import * as myIcon from './icon.png'
 import * as iconPurple from './icon_purple.png'
+import * as iconPurple_r from './icon_purple_r.png'
+import * as iconPurple_i from './icon_purple_i.png'
+import * as iconPurple_e from './icon_purple_e.png'
+
 import * as iconOrange from './icon_orange.png'
+import * as iconOrange_r from './icon_orange_r.png'
+import * as iconOrange_i from './icon_orange_i.png'
+import * as iconOrange_e from './icon_orange_e.png'
+
 import * as iconGreen from './icon_green.png'
+import * as iconGreen_r from './icon_green_r.png'
+import * as iconGreen_i from './icon_green_i.png'
+import * as iconGreen_e from './icon_green_e.png'
+
 import * as iconYellow from './icon_yellow.png'
+import * as iconYellow_r from './icon_yellow_r.png'
+import * as iconYellow_i from './icon_yellow_i.png'
+import * as iconYellow_e from './icon_yellow_e.png'
+
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -243,26 +259,33 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     switch(new_state) {
         case AgentStates.EXPOSED:
             stroke_color = "orange";
+            // img = iconPurple_e
             break;
         case AgentStates.S_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
+            // img = iconPurple_i
             break;
         case AgentStates.A_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
+            // img = iconPurple_i
 
             break;
         case AgentStates.RECOVERED:
             stroke_color = "blue";
             viva_node_color = 0xFFFFFFff;
+            // img = iconPurple_r
+
             break;
         case AgentStates.SENSITIVE:
             org.render.lineWidth = 0;
+            // img = iconPurple
             break;
         };
 
     org.render.strokeStyle = stroke_color;
+    // org.render.sprite.texture = img;
     
     return org;
     //viva_graphics.getNodeUI(org.agent_object.node.id).color = viva_node_color;
