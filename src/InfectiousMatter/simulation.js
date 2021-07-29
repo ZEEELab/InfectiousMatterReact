@@ -22,6 +22,7 @@ import * as iconYellow_r from './icon_yellow_r.png'
 import * as iconYellow_i from './icon_yellow_i.png'
 import * as iconYellow_e from './icon_yellow_e.png'
 
+
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -253,40 +254,79 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     org.render.lineWidth = 10;
     let stroke_color = org.render.strokeStyle;
     let viva_node_color;
-
+    let img;
     //todo: refactor to callback?
     //refactor to event!
     switch(new_state) {
         case AgentStates.EXPOSED:
             stroke_color = "orange";
-            // img = iconPurple_e
+            img = "e"
             break;
         case AgentStates.S_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
-            // img = iconPurple_i
+            img = "i"
             break;
         case AgentStates.A_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
-            // img = iconPurple_i
+            img = "i"
 
             break;
         case AgentStates.RECOVERED:
             stroke_color = "blue";
             viva_node_color = 0xFFFFFFff;
-            // img = iconPurple_r
+            img = "r"
 
             break;
         case AgentStates.SENSITIVE:
             org.render.lineWidth = 0;
-            // img = iconPurple
+            img = ""
             break;
         };
 
-    org.render.strokeStyle = stroke_color;
-    // org.render.sprite.texture = img;
-    
+    if (org.agent_object.home.home_color ==="lime"){
+        if (img ==="e"){
+            org.render.sprite.texture = iconGreen_e
+        } else if (img ==="i"){
+            org.render.sprite.texture = iconGreen_i
+        } else if (img ==="r"){
+            org.render.sprite.texture = iconGreen_r
+        } else {
+            org.render.sprite.texture = iconGreen
+        }
+    } else if (org.agent_object.home.home_color ==="mediumpurple"){
+        if (img ==="e"){
+            org.render.sprite.texture = iconPurple_e
+        } else if (img ==="i"){
+            org.render.sprite.texture = iconPurple_i
+        } else if (img ==="r"){
+            org.render.sprite.texture = iconPurple_r
+        } else {
+            org.render.sprite.texture = iconPurple
+        }
+    } else if (org.agent_object.home.home_color ==="yellow"){
+        if (img ==="e"){
+            org.render.sprite.texture = iconYellow_e
+        } else if (img ==="i"){
+            org.render.sprite.texture = iconYellow_i
+        } else if (img ==="r"){
+            org.render.sprite.texture = iconYellow_r
+        } else {
+            org.render.sprite.texture = iconYellow
+        }
+    } else {
+        if (img ==="e"){
+            org.render.sprite.texture = iconOrange_e
+        } else if (img ==="i"){
+            org.render.sprite.texture = iconOrange_i
+        } else if (img ==="r"){
+            org.render.sprite.texture = iconOrange_r
+        } else {
+            org.render.sprite.texture = iconOrange
+        }
+    }
+
     return org;
     //viva_graphics.getNodeUI(org.agent_object.node.id).color = viva_node_color;
 };
