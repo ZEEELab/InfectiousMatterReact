@@ -2,6 +2,10 @@ import { jStat } from 'jstat';
 import Pathogen from './pathogen.js';
 import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
 import * as myIcon from './icon.png'
+import new_iconS from './new_S.png'
+import  new_iconI from './new_I.png'
+import  new_iconR from './new_R.png'
+
 import * as iconPurple from './icon_purple.png'
 import * as iconPurple_r from './icon_purple_r.png'
 import * as iconPurple_i from './icon_purple_i.png'
@@ -107,7 +111,7 @@ var default_infection_params = {
     fraction_isolate: 0.2,
     time_to_seek_care: 2.5,
     movement_scale: 0.2,
-    use_pathogen_contagiousness: false
+    use_pathogen_contagiousness: true,
 };
 
 var default_simulation_colors = {
@@ -261,30 +265,38 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
         case AgentStates.EXPOSED:
             stroke_color = "orange";
             img = "e"
+            org.render.sprite.texture = new_iconI;
             break;
         case AgentStates.S_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
             img = "i"
+            org.render.sprite.texture = new_iconI;
             break;
         case AgentStates.A_INFECTED:
             stroke_color = "red";
             viva_node_color = 0xFF0000ff;
             img = "i"
+            org.render.sprite.texture = new_iconI;
+
 
             break;
         case AgentStates.RECOVERED:
             stroke_color = "blue";
             viva_node_color = 0xFFFFFFff;
             img = "r"
+            org.render.sprite.texture = new_iconR;
 
             break;
         case AgentStates.SENSITIVE:
             org.render.lineWidth = 0;
             img = ""
+            org.render.sprite.texture = new_iconS;
+
             break;
         };
 
+    /*
     if (org.agent_object.home.home_color ==="lime"){
         if (img ==="e"){
             org.render.sprite.texture = iconGreen_e
@@ -326,6 +338,7 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
             org.render.sprite.texture = iconOrange
         }
     }
+    */
 
     return org;
     //viva_graphics.getNodeUI(org.agent_object.node.id).color = viva_node_color;
@@ -356,13 +369,13 @@ InfectiousMatter.prototype.assign_cohort = function(org, cohort) {
     cohort.add_agent(org.agent_object);
 };
 
-InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, infecting_agent) {
+InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, infecting_agent, transmision_prob=0.5) {
     if (infecting_agent && infecting_agent.pathogen){ 
         org.agent_object.pathogen = infecting_agent.pathogen.get_offspring(this.simulation_params.pathogen_mut_prob);
     } else {
-        org.agent_object.pathogen = new Pathogen(0.5, 'root');
+        org.agent_object.pathogen = new Pathogen(0.5, 'root', transmision_prob);
     }
-    this.update_org_state(org, AgentStates.EXPOSED);
+    this.update_org_state(org, AgentStates.S_INFECTED);
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
 
@@ -410,6 +423,7 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
 };
 
 InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+
     return this.infection_params.per_contact_infection;
 }
 
@@ -458,16 +472,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 
     let loc = home_location.get_random_position();
     //if home location color is...
-    let colorIcon= iconPurple
-    if (home_location.home_color === "mediumpurple"){
-        colorIcon = iconPurple
-    } else if (home_location.home_color === "lime"){
-        colorIcon = iconGreen
-    } else if (home_location.home_color === "yellow"){
-        colorIcon = iconYellow
-    } else{
-        colorIcon = iconOrange
-    }
+    let colorIcon= new_iconS
 
     let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {
         render: {sprite: {texture: colorIcon, xScale: 0.15,

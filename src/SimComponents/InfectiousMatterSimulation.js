@@ -15,57 +15,27 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             friction: 0.01,
             bounds: {
                 min: {
-                    x: 10,
-                    y: 10,
+                    x: 20,
+                    y: 20,
                 },
                 max: {
-                    x: 190,
-                    y: 190,
+                    x: 380,
+                    y: 380,
                 }
             }
         };
 
         let res_prop2 = {
             type: "residence", 
-            friction: 0.02,
+            friction: 0.01,
             bounds: {
                 min: {
-                    x: 10,
-                    y: 210,
+                    x: 410,
+                    y: 20,
                 },
                 max: {
-                    x: 190,
-                    y: 390,
-                }
-            }
-        };
-
-        let res_prop3 = {
-            type: "residence", 
-            friction: 0.02,
-            bounds: {
-                min: {
-                    x: 210,
-                    y: 10,
-                },
-                max: {
-                    x: 390,
-                    y: 190,
-                }
-            }
-        };
-
-        let res_prop4 = {
-            type: "residence", 
-            friction: 0.02,
-            bounds: {
-                min: {
-                    x: 210,
-                    y: 210,
-                },
-                max: {
-                    x: 390,
-                    y: 390,
+                    x: 780,
+                    y: 380,
                 }
             }
         };
@@ -73,21 +43,11 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
 
         let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop}});
         let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop2}});
-        let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop3}});
-        let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop4}});
 
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: 100}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 150}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 150}});
+
         
-        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
-        
-        
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res1.uuid, to_location:res2.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2.uuid, to_location:res3.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res3.uuid, to_location:res4.uuid, num_agents:2}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res1.uuid, num_agents:2}});
         
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
@@ -132,6 +92,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             fraction_isolate: 0.2,
             time_to_seek_care: 2.5,
             movement_scale: 2.0,
+            use_pathogen_contagiousness: true,
+
         };
   
         let default_simulation_colors = {
@@ -160,7 +122,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
 
     return (
         <div>
-            <div ref={sim_div} style={{height:400, width:400}}>
+            <div ref={sim_div} style={{height:400, width:800}}>
 
             </div>
         </div>

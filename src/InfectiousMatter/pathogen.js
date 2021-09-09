@@ -6,7 +6,8 @@ var uniqid = require("uniqid");
 
 let _mutate_random = function(other_agent) {
 	let new_color = other_agent.color_float + jStat.exponential.sample(8);
-	let new_contagiousness = Math.min(other_agent.contagiousness + jStat.normal.sample(0, 0.1), 1);
+	let new_contagiousness = other_agent.contagiousness 
+	//let new_contagiousness = Math.min(other_agent.contagiousness + jStat.normal.sample(0, 0.1), 1);
 
 	new_color = new_color % 1;
 	//new_color = Math.random();
@@ -15,18 +16,19 @@ let _mutate_random = function(other_agent) {
 	this.contagiousness = new_contagiousness;
 }
 
-function Pathogen(color, parent) {
+function Pathogen(color, parent, contagiousness) {
+	console.log("new pathogen: ", contagiousness)
 	this.parent = undefined;
 	this.interaction_callback = undefined;
 	this.uuid = uniqid()  ;
 	this.color_float = color || Math.random();
 	this.mutation_function = _mutate_random;
-	this.contagiousness = 0.5;
+	this.contagiousness = contagiousness || 0.5;
 }
 
 Pathogen.prototype.get_offspring = function(mut_rate) {
 	let offspring_color = this.color_float;
-	let new_pathogen = new Pathogen(offspring_color);
+	let new_pathogen = new Pathogen(offspring_color, this, this.contagiousness);
 
 	if (Math.random() < mut_rate && this.mutation_function) {
 		new_pathogen.mutation_function(this);

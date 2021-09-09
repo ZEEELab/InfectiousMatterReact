@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   paperControlls: {
     minHeight: 400,
     minWidth: 400,
-    textAlign: 'center',
+    textAlign: 'center',  
     padding: theme.spacing(2)
   }
 }));
@@ -42,7 +42,8 @@ const useStyles = makeStyles((theme) => ({
 InfectiousMatter.prototype.mask_transmission_props = { self_protection:0.05, others_protection:0.5};
 
 //agent_a is always a susceptable exposed to an infected (agent_b)
-InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+/* InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+  console.log("actually I'm here.")
   let default_infection_prob = this.infection_params.per_contact_infection;
   if(agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
       return default_infection_prob * (1-this.mask_transmission_props.self_protection) * (1-this.mask_transmission_props.others_protection);
@@ -52,6 +53,16 @@ InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_
       return default_infection_prob * (1-this.mask_transmission_props.others_protection);
   else if (!agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
       return default_infection_prob;
+} */
+InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+  //agent_a is always a susceptable exposed to an infected (agent_b)
+  //use pathogen object's transmission probability here...
+  //mutate it here? 
+  if (this.infection_params.use_pathogen_contagiousness) {
+    return agent_b_body.agent_object.pathogen.contagiousness
+  } else {
+    return this.infection_params.per_contact_infection;
+  }
 }
 
 const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
@@ -111,6 +122,17 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
       }
     }
   } 
+  if (action.type == 'infect_each_location') {
+    if(action.payload.num_agents && action.payload.infection_probs) {
+      InfectiousMatterRef.current.locations.forEach( (loc, loc_idx) => {
+        let agents_to_infect = loc.try_getting_random_residents(action.payload.num_agents)
+        agents_to_infect.forEach( (random_agent) => {
+          console.log(action.payload.infection_probs[loc_idx]);
+          InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED, null, action.payload.infection_probs[loc_idx])
+        })
+      });
+    }
+  }
   if (action.type == 'get_migration_links') {
     return InfectiousMatterRef.current.get_migration_links();
   }
@@ -179,7 +201,7 @@ const InfectiousMatterContainer = (props) => {
   const [numMasked, setNumMasked] = useState(0);
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
-  const [movementScale, setMovementScale] = useState(2.0);
+  const [movementScale, setMovementScale] = useState(3.0);
   
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [worldReadyTrigger, setWorldReadyTrigger] = useState(0);
@@ -192,9 +214,10 @@ const InfectiousMatterContainer = (props) => {
     InfectiousMatterAPI(
       InfectiousMatterRef, 
       {
-        type: 'infect_random_agents', 
+        type: 'infect_each_location', 
         payload: {
-          num_agents: 1
+          num_agents: 2,
+          infection_probs: [0.9, 0.3]
         }
       });
   }
@@ -238,15 +261,6 @@ const InfectiousMatterContainer = (props) => {
     <div className="App">
       <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={3}>
         <Grid item>
-          <Card className={classes.paper}>
-          <InfectiousMatterPlot                 
-            InfectiousMatterRef={InfectiousMatterRef}
-            InfectiousMatterAPI={InfectiousMatterAPI}
-            redraw_trigger={redraw_trigger}
-          />
-          </Card>
-        </Grid>
-        <Grid item>
         <Card className={classes.paper}>
           <InfectiousMatterSimulation 
             InfectiousMatterRef={InfectiousMatterRef}
@@ -257,15 +271,7 @@ const InfectiousMatterContainer = (props) => {
           />
         </Card>
         </Grid>
-        <Grid item>
-          <Card className={classes.paper}>
-            <InfectiousMatterContactGraph                 
-              InfectiousMatterRef={InfectiousMatterRef}
-              InfectiousMatterAPI={InfectiousMatterAPI} 
-              worldReadyTrigger={worldReadyTrigger}
-            />
-          </Card>
-        </Grid>
+
       </Grid>
 
       <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
@@ -273,18 +279,6 @@ const InfectiousMatterContainer = (props) => {
         <Card className={classes.paper}>
           <List>
           <ListSubheader disableSticky={true}>World Settings</ListSubheader>
-          <ListItem>
-            <ListItemText id="Masks" primary="Number Masked" />
-              <Slider
-                value={numMasked}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="on"
-                onChange={handleNumMaskedSliderChange}
-                step={1}
-                min={0}
-                max={400}
-              />
-          </ListItem>
           <ListItem>
             <ListItemText id="Movement" primary="Movement Scale" />
             <Slider
@@ -310,43 +304,9 @@ const InfectiousMatterContainer = (props) => {
             </Grid>
           </ListItem>          
 
-          
-          <ListSubheader disableSticky={true}>Mask Settings</ListSubheader>
-          <ListItem>
-            <ListItemText id="selfProtection" primary="Self Protection"/>
-              <Slider
-                value={maskSelfProtection}
-                aria-labelledby="continuous-slider"
-                onChange={handleMaskSelfProtectionChange}
-                valueLabelDisplay="on"
-                min={0}
-                max={1}
-                step={0.01}
-              />
-            </ListItem>
-          <ListItem>
-            <ListItemText id="othersProtection" primary="Others Protection" />
-              <Slider
-                value={maskOthersProtection}
-                aria-labelledby="continuous-slider"
-                onChange={handleMaskOthersProtectionChange}
-                valueLabelDisplay="on"
-                min={0}
-                max={1}
-                step={0.01}
-              />
-          </ListItem>
         </List>
-      </Card>
+        </Card>
         </Grid>
-        
-      <Grid item className={classes.controlls}>
-        <InfectiousMatterMigrationTable             
-          InfectiousMatterRef={InfectiousMatterRef}
-          InfectiousMatterAPI={InfectiousMatterAPI}
-          worldReadyTrigger={worldReadyTrigger}
-        />
-      </Grid>
     </Grid>
     </div>
   )
