@@ -63,11 +63,11 @@ var Events = Matter.Events;
 
 
 var default_simulation_params = {
-    sim_time_per_day:2000,
+    sim_time_per_day:1000,
     agent_size: 3,
-    link_lifetime: 4000,
+    link_lifetime: 2000,
     pathogen_mut_prob: 0.1,
-    agent_lifespan:  6000,
+    agent_lifespan:  300000,
 };
 
 var default_infection_params = {
@@ -382,7 +382,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
     new_agent_body.agent_object.viva_color = home_location.viva_node_color
-    new_agent_body.agent_object.lifetime = Math.min(jStat.exponential.sample(1/this.simulation_params.agent_lifespan), 1.75*this.simulation_params.agent_lifespan)
+    new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/this.simulation_params.agent_lifespan)
     
     home_location.add_agent(new_agent_body.agent_object);
 
@@ -412,8 +412,6 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 };
 
 InfectiousMatter.prototype.delete_agent = function(an_agent) {
-    console.log("calling delete agent");
-
     this.agents = this.agents.filter(function(a) {
 		return (a !== an_agent)
     });
