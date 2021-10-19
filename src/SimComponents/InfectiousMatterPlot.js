@@ -9,7 +9,7 @@ let get_fresh_traces = function() {
     stackgroup: 'one',
     name: "Susceptible",
     type: "scattergl",
-    marker: { color: "grey" }
+    marker: { color: "#a6bce1" }
   }
 
   let infected = {
@@ -18,7 +18,7 @@ let get_fresh_traces = function() {
     stackgroup: 'one',
     type: "scattergl",
     name: "Infected",
-    marker: { color: "red" }
+    marker: { color: "#d8752f" }
   };
 
   let recovered = {
@@ -27,7 +27,7 @@ let get_fresh_traces = function() {
     stackgroup: 'one',
     name: "Recovered",
     type: "scattergl",
-    marker: { color: "blue" }
+    marker: { color: "#395e2d" }
   };
 
   let plot_data = [infected, recovered, susceptible];
@@ -56,8 +56,8 @@ let infection_layout = {
       title: "Count",
       rangemode: 'nonnegative'
   },
-  width:290,
-  height:290
+  width:390,
+  height:390
 };
 
 const initial_traces = get_fresh_traces();

@@ -44,7 +44,7 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI,
     }, [worldReadyTrigger])
 
     return (
-        <div ref={graph_div} style={{width:300, height:300}} >
+        <div ref={graph_div} style={{width:400, height:400}} >
         </div>
     );
 };

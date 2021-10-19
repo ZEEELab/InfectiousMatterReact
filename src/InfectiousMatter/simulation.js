@@ -1,6 +1,11 @@
 import { jStat } from 'jstat';
 import Pathogen from './pathogen.js';
 import InfectiousMatterSimulation from '../SimComponents/InfectiousMatterSimulation.js';
+import new_iconS from './new_S.png'
+import new_iconI from './new_I.png'
+import new_iconR from './new_R.png'
+
+
 var Matter = require('matter-js');
 require('matter-wrap');
 var { MatterCollisionEvents } = require('./MatterCollisionEvents.js');
@@ -214,7 +219,6 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 
     this.add_event({time: 100, callback: this.pulse_orgs_event(), recurring:true, stale:false})
 
-
 };
 
 InfectiousMatter.prototype.update_org_state = function(org, new_state) {
@@ -233,21 +237,20 @@ InfectiousMatter.prototype.update_org_state = function(org, new_state) {
     //refactor to event!
     switch(new_state) {
         case AgentStates.INFECTED:
-            stroke_color = "red";
             viva_node_color = 0xFF0000ff;
+            org.render.sprite.texture = new_iconI;
             break;
         case AgentStates.RECOVERED:
-            stroke_color = "blue";
             viva_node_color = 0xFFFFFFff;
+            org.render.sprite.texture = new_iconR;
+
             break;
         case AgentStates.SENSITIVE:
-            stroke_color = "black";
             org.render.lineWidth = 0;
+            org.render.sprite.texture = new_iconS;
             break;
         };
 
-    org.render.strokeStyle = stroke_color;
-    
     return org;
     //viva_graphics.getNodeUI(org.agent_object.node.id).color = viva_node_color;
 };
@@ -360,10 +363,16 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 
     let loc = home_location.get_random_position();
     //let new_agent_body = 
-    let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {plugin: {wrap: home_location.bounds}});
-    new_agent_body.render.fillStyle = home_location.home_color || "black";
-    new_agent_body.strokeStyle = "black";
-    new_agent_body.lineWidth = 2;
+    let colorIcon= new_iconS
+
+    let new_agent_body = Bodies.circle(loc.x, loc.y, this.simulation_params.agent_size, {
+        render: {sprite: {texture: colorIcon, xScale: 0.15,
+        yScale: 0.15}},
+        plugin: {wrap: home_location.bounds}, 
+        
+    });
+
+    Matter.Body.setInertia(new_agent_body, Infinity);
 
     new_agent_body.agent_object = new Agent(new_agent_body);
     new_agent_body.frictionAir = home_location.friction;

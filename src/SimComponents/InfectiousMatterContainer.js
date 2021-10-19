@@ -18,7 +18,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { Scrollama, Step } from 'react-scrollama';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,16 +25,16 @@ const useStyles = makeStyles((theme) => ({
     minWidth:1000
   },
   controlls: {
-    width:300,
+    width:400,
   },
   paper: {
-    height: 300,
-    width: 300,
+    height: 400,
+    width: 400,
     textAlign: 'center',
   },
   paperControlls: {
-    minHeight: 300,
-    minWidth: 300,
+    minHeight: 400,
+    minWidth: 400,
     textAlign: 'center',
     padding: theme.spacing(1)
   }
@@ -309,6 +308,7 @@ const InfectiousMatterContainer = (props) => {
         </Card>
         </Grid>
 
+        {/*
         <Grid item>
           <Card className={classes.paper}>
             <InfectiousMatterContactGraph                 
@@ -318,6 +318,7 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
+        */}
 
       </Grid>
       
@@ -325,7 +326,7 @@ const InfectiousMatterContainer = (props) => {
         <Grid item>
         <Accordion spacing={2}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Controlls</Typography>
+            <Typography>Controls</Typography>
           </AccordionSummary>
           <AccordionDetails>
           <List>
@@ -399,9 +400,7 @@ const InfectiousMatterContainer = (props) => {
         </Grid>
     </Grid>
     <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
-      <Typography>
-        Some
-      </Typography>
+
     </Grid>
     </div>
   )

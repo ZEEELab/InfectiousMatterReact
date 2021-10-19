@@ -19,8 +19,8 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
                     y: 10,
                 },
                 max: {
-                    x: 290,
-                    y: 290,
+                    x: 390,
+                    y: 390,
                 }
             }
         };
@@ -100,7 +100,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
 
     return (
         <div>
-            <div ref={sim_div} style={{height:300, width:300}}>
+            <div ref={sim_div} style={{height:400, width:400}}>
 
             </div>
         </div>
