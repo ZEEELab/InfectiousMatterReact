@@ -67,7 +67,7 @@ var default_simulation_params = {
     agent_size: 3,
     link_lifetime: 2000,
     pathogen_mut_prob: 0.1,
-    agent_lifespan:  300000,
+    agent_lifespan:  50000,
 };
 
 var default_infection_params = {
@@ -87,7 +87,7 @@ var default_infection_params = {
     fraction_isolate: 0.2,
     time_to_seek_care: 2.5,
     movement_scale: 0.2,
-    use_pathogen_contagiousness: false
+    use_pathogen_contagiousness: true
 };
 
 var default_simulation_colors = {
@@ -404,11 +404,18 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     
     this.add_event( {
         time: new_agent_body.agent_object.lifetime,
-        callback: () => {this.delete_agent(new_agent_body.agent_object)},
+        callback: this._death_birth(new_agent_body.agent_object),
         recurring:false,
         stale:false
     } )
     return(new_agent_body);
+};
+InfectiousMatter.prototype._death_birth = function(agent_to_remove) {
+    return () => {
+        let home_loc = agent_to_remove.home;
+        this.delete_agent(agent_to_remove);
+        this.add_agent(home_loc);
+    };
 };
 
 InfectiousMatter.prototype.delete_agent = function(an_agent) {
