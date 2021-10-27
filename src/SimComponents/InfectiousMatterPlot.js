@@ -6,17 +6,15 @@ let get_fresh_traces = function() {
   let susceptible = {
     x: [0],
     y: [0],
-    stackgroup: 'one',
     name: "Susceptible",
-    type: "scattergl",
+    type: "scatter",
     marker: { color: "#a6bce1" }
   }
 
   let infected = {
     x: [0],
     y: [0],
-    stackgroup: 'one',
-    type: "scattergl",
+    type: "scatter",
     name: "Infected",
     marker: { color: "#d8752f" }
   };
@@ -24,9 +22,8 @@ let get_fresh_traces = function() {
   let recovered = {
     x: [0],
     y: [0],
-    stackgroup: 'one',
     name: "Recovered",
-    type: "scattergl",
+    type: "scatter",
     marker: { color: "#395e2d" }
   };
 

@@ -43,4 +43,8 @@ Agent.prototype.draw_mask = function(ctx, agent_size) {
 
 }
 
+Agent.prototype.draw_pathogen = function(ctx, agent_size) {
+	
+}
+
 module.exports = Agent;
