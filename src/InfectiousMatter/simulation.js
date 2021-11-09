@@ -66,8 +66,8 @@ var default_simulation_params = {
     sim_time_per_day:1000,
     agent_size: 3,
     link_lifetime: 2000,
-    pathogen_mut_prob: 0.1,
-    agent_lifespan:  50000,
+    pathogen_mut_prob: 0.5,
+    agent_lifespan:  50,
 };
 
 var default_infection_params = {
@@ -101,7 +101,7 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
     this.simulation_colors = Matter.Common.extend(default_simulation_colors, simulation_colors);
     this.matter_world = World.create() 
     this.headless = run_headless || false;
-    this.pathogen_color_range = pathogen_color_range;    
+    this.pathogen_color_range = pathogen_color_range;
 
     console.log("creating infectious matter environment!");
 
@@ -210,9 +210,7 @@ InfectiousMatter.prototype.setup_matter_env = function() {
 	                this.locations[i].draw_borders(ctx);
                 } 
                 this.agents.forEach( (agent) => {
-                    if(agent.masked){
-                        agent.draw_mask(ctx, this.simulation_params.agent_size);
-                    }
+                    agent.draw_pathogen(ctx);
                 });
 	        }
 	    });
@@ -285,6 +283,7 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     if (infecting_agent && infecting_agent.pathogen){ 
         org.agent_object.pathogen = infecting_agent.pathogen.get_offspring(this.simulation_params.pathogen_mut_prob);
     } else {
+        console.log("Creating new pathogen object");
         org.agent_object.pathogen = new Pathogen(0.5, 'root');
     }
 
@@ -296,7 +295,7 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     let update_org_event = {
         time: days_to_recover*this.simulation_params.sim_time_per_day,
         callback: () => {
-            this.update_org_state(org, AgentStates.RECOVERED);
+            this.update_org_state(org, AgentStates.RECOVERED)
         },
         stale: false
     }
@@ -324,9 +323,14 @@ InfectiousMatter.prototype._check_edge_for_removal = function(edge) {
 };
 
 InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
-    return this.infection_params.per_contact_infection;
+    if (this.infection_params.use_pathogen_contagiousness) {
+        return agent_b_body.agent_object.pathogen.contagiousness;
+    }
+    else
+        return this.infection_params.per_contact_infection;
 }
 
+//TODO add pathogen virulence into call back, dependent on transmission??
 InfectiousMatter.prototype._default_interaction_callback  = function(this_agent_body) {
     return (
         (other_agent) => {
@@ -382,7 +386,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {something:true});
     new_agent_body.agent_object.home = home_location;
     new_agent_body.agent_object.viva_color = home_location.viva_node_color
-    new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/this.simulation_params.agent_lifespan)
+    new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/(this.simulation_params.agent_lifespan*1000))
     
     home_location.add_agent(new_agent_body.agent_object);
 

@@ -52,6 +52,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             sim_time_per_day: 1000,
             agent_size: 4,
             link_lifetime: 200,
+            agent_lifespan: 50,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
         
@@ -72,6 +73,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             fraction_isolate: 0.2,
             time_to_seek_care: 2.5,
             movement_scale: 2.0,
+            use_pathogen_contagiousness: true
         };
   
         let default_simulation_colors = {

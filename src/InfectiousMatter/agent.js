@@ -19,6 +19,7 @@ function Agent(body) {
 	this.home_state = {};
 	this.migrating = false;
 	this.masked = false;
+	this.pathogen = undefined;
 }
 
 Agent.prototype.add_body = function(body) {
@@ -43,8 +44,13 @@ Agent.prototype.draw_mask = function(ctx, agent_size) {
 
 }
 
-Agent.prototype.draw_pathogen = function(ctx, agent_size) {
-	
+Agent.prototype.draw_pathogen = function(ctx) {
+	if (this.pathogen) {
+		let path_cont = this.pathogen.contagiousness;
+		ctx.fillRect(this.body.position.x-3, this.body.position.y-11, 6, 4);
+		ctx.fillStyle = 'rgba(100, 0, 0, ' + path_cont +')';
+	}
+
 }
 
 module.exports = Agent;

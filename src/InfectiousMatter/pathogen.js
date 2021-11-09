@@ -27,10 +27,12 @@ function Pathogen(color, parent) {
 Pathogen.prototype.get_offspring = function(mut_rate) {
 	let offspring_color = this.color_float;
 	let new_pathogen = new Pathogen(offspring_color);
+	new_pathogen.contagiousness = this.contagiousness;
 
 	if (Math.random() < mut_rate && this.mutation_function) {
 		new_pathogen.mutation_function(this);
 	}
+	console.log(new_pathogen.contagiousness);
 	return new_pathogen;
 };
 

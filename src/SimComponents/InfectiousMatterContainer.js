@@ -42,19 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
 InfectiousMatter.prototype.mask_transmission_props = { self_protection:0.05, others_protection:0.5};
 
-//agent_a is always a susceptable exposed to an infected (agent_b)
-InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
-  let default_infection_prob = this.infection_params.per_contact_infection;
-  if(agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
-      return default_infection_prob * (1-this.mask_transmission_props.self_protection) * (1-this.mask_transmission_props.others_protection);
-  else if (agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
-      return default_infection_prob * (1-this.mask_transmission_props.self_protection);
-  else if (!agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
-      return default_infection_prob * (1-this.mask_transmission_props.others_protection);
-  else if (!agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
-      return default_infection_prob;
-}
-
 const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'setup_environment') {
     InfectiousMatterRef.current.setup_renderer(action.payload.sim_div.current);
@@ -79,6 +66,11 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   if (action.type == 'update_movement_scale') {
     if(action.payload.movement_scale) {
       InfectiousMatterRef.current.infection_params.movement_scale = action.payload.movement_scale;
+    }
+  }
+  if (action.type == 'update_agent_lifespan') {
+    if(action.payload.agent_lifespan) {
+      InfectiousMatterRef.current.simulation_params.agent_lifespan = action.payload.agent_lifespan;
     }
   }
   if (action.type == 'reset_simulator') {
@@ -197,10 +189,11 @@ const InfectiousMatterContainer = (props) => {
   const classes = useStyles();
   const InfectiousMatterRef = useRef(null);
   const [numMasked, setNumMasked] = useState(0);
-  const [popSize, setPopSize] = useState(350);
+  const [popSize, setPopSize] = useState(500);
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
-  const [movementScale, setMovementScale] = useState(2.0);
+  const [movementScale, setMovementScale] = useState(3.0);
+  const [agentLifespan, setAgentLifespan] = useState(50);
    
   const [perContactInfection, setPerContactInfection] = useState(0.5);
   const [infectiousPeriodMean, setInfectiousPeriodMean] = useState(5);
@@ -243,6 +236,10 @@ const InfectiousMatterContainer = (props) => {
   function handleMovementScaleChange(event, newValue) {
     setMovementScale(newValue);
   }
+
+  function handleAgentLifespanChange(event, newValue) {
+    setAgentLifespan(newValue);
+  }
   
   useEffect( () => {
     InfectiousMatterAPI (
@@ -261,6 +258,12 @@ const InfectiousMatterContainer = (props) => {
       InfectiousMatterRef, 
       {type: 'update_mask_transmission_params', payload: {self_protection: maskSelfProtection}});
   }, [maskSelfProtection])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef,
+      {type: 'update_agent_lifespan', payload: {agent_lifespan: agentLifespan}});
+  }, [agentLifespan])
 
   useEffect( () => {
     InfectiousMatterAPI (
@@ -355,6 +358,20 @@ const InfectiousMatterContainer = (props) => {
               max={10}
             />
           </ListItem>
+
+          <ListItem>
+            <ListItemText id="lifespan" primary="Agent Lifespan" />
+              <Slider
+                value={agentLifespan}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                onChange={handleAgentLifespanChange}
+                step={5}
+                min={5}
+                max={200}
+              />
+          </ListItem>
+
           <ListItem>
             <Grid container direction="row" spacing={3}>
               <Grid item>
