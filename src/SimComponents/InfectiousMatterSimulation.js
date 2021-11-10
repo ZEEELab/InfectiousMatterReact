@@ -15,12 +15,12 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             friction: 0.01,
             bounds: {
                 min: {
-                    x: 10,
-                    y: 10,
+                    x: 20,
+                    y: 20,
                 },
                 max: {
-                    x: 190,
-                    y: 190,
+                    x: 130,
+                    y: 130,
                 }
             }
         };
@@ -30,12 +30,12 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             friction: 0.02,
             bounds: {
                 min: {
-                    x: 10,
-                    y: 210,
+                    x: 20,
+                    y: 150,
                 },
                 max: {
-                    x: 190,
-                    y: 390,
+                    x: 130,
+                    y: 250,
                 }
             }
         };
@@ -45,12 +45,12 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             friction: 0.02,
             bounds: {
                 min: {
-                    x: 210,
-                    y: 10,
+                    x: 20,
+                    y: 270,
                 },
                 max: {
-                    x: 390,
-                    y: 190,
+                    x: 130,
+                    y: 380,
                 }
             }
         };
@@ -60,26 +60,113 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             friction: 0.02,
             bounds: {
                 min: {
-                    x: 210,
-                    y: 210,
+                    x: 150,
+                    y: 20,
                 },
                 max: {
-                    x: 390,
-                    y: 390,
+                    x: 260,
+                    y: 130,
                 }
             }
         };
+
+        let res_prop5 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 150,
+                    y: 150,
+                },
+                max: {
+                    x: 260,
+                    y: 250,
+                }
+            }
+        };
+        let res_prop6 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 150,
+                    y: 270,
+                },
+                max: {
+                    x: 260,
+                    y: 380,
+                }
+            }
+        };
+
+        let res_prop7 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 280,
+                    y: 20,
+                },
+                max: {
+                    x: 380,
+                    y: 130,
+                }
+            }
+        };
+
+        let res_prop8 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 280,
+                    y: 150,
+                },
+                max: {
+                    x: 380,
+                    y: 250,
+                }
+            }
+        };
+        let res_prop9 = {
+            type: "residence", 
+            friction: 0.02,
+            bounds: {
+                min: {
+                    x: 280,
+                    y: 270,
+                },
+                max: {
+                    x: 380,
+                    y: 380,
+                }
+            }
+        };
+        
+
+
 
 
         let res1 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop}});
         let res2 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop2}});
         let res3 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop3}});
         let res4 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop4}});
+        let res5 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop5}});
+        let res6 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop6}});
+        let res7 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop7}});
+        let res8 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop8}});
+        let res9 = InfectiousMatterAPI(InfectiousMatterRef, {type:'add_location', payload:{residence_props: res_prop9}});
 
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: 100}});
-        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: 100}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res1, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res2, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res3, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res4, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res5, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res6, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res7, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res8, num_agents: 70}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res9, num_agents: 70}});
+
         
         InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
         
@@ -88,7 +175,12 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res2.uuid, to_location:res3.uuid, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res3.uuid, to_location:res4.uuid, num_agents:2}});
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res1.uuid, num_agents:2}});
-        
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res5.uuid, num_agents:2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res6.uuid, num_agents:2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res7.uuid, num_agents:2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res8.uuid, num_agents:2}});
+        InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res4.uuid, to_location:res9.uuid, num_agents:2}});
+
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: num_to_mask}});
@@ -110,7 +202,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         
         let simulation_params = {
             sim_time_per_day: 1000,
-            agent_size: 4,
+            agent_size: 3,
             link_lifetime: 200,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
