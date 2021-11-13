@@ -3,15 +3,6 @@ import Plot from 'react-plotly.js'; //TODO: use bundles to limit the size of thi
 import {AgentStates} from '../InfectiousMatter/simulation.js';
 
 let get_fresh_traces = function() {
-  let exposed = {
-      x: [0],
-      y: [0],
-      stackgroup: 'one',
-      //type: "scattergl",
-      name: "Exposed",
-    marker: { color: "orange" }
-  };
-
   let infected = {
     x: [0],
     y: [0],
@@ -38,7 +29,7 @@ let get_fresh_traces = function() {
       //type: "scattergl",
       marker: { color: "grey" }
   }
-  let plot_data = [exposed, infected, recovered, susceptible];
+  let plot_data = [infected, recovered, susceptible];
   return plot_data;
 }
 
@@ -76,16 +67,13 @@ function reducer(state, action) {
   switch (action.type) {
     case 'extend': {
       new_state[0].x.push(action.payload.cur_time);
-      new_state[0].y.push(action.payload.cur_state_counts[AgentStates.EXPOSED]);
+      new_state[0].y.push(action.payload.cur_state_counts[AgentStates.INFECTED]);
 
       new_state[1].x.push(action.payload.cur_time);
-      new_state[1].y.push(action.payload.cur_state_counts[AgentStates.S_INFECTED] + action.payload.cur_state_counts[AgentStates.A_INFECTED]);
+      new_state[1].y.push(action.payload.cur_state_counts[AgentStates.RECOVERED]);
 
       new_state[2].x.push(action.payload.cur_time);
-      new_state[2].y.push(action.payload.cur_state_counts[AgentStates.RECOVERED]);
-
-      new_state[3].x.push(action.payload.cur_time);
-      new_state[3].y.push(action.payload.cur_state_counts[AgentStates.SUSCEPTIBLE]);
+      new_state[2].y.push(action.payload.cur_state_counts[AgentStates.SUSCEPTIBLE]);
 
       // new_state[1].push(action.payload.state_counts[AgentStates.S_INFECTED] + action.state_counts[AgentStates.A_INFECTED]);
       // new_state[2].push(action.payload.state_counts[AgentStates.RECOVERED]);

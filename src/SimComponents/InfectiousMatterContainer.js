@@ -107,7 +107,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     if(action.payload.num_agents) {
       for(let i=0; i< action.payload.num_agents; i++) {
         let random_agent = Matter.Common.choose(InfectiousMatterRef.current.agents);
-        InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.S_INFECTED);
+        InfectiousMatterRef.current.expose_org(random_agent.body, AgentStates.INFECTED);
       }
     }
   } 
@@ -169,6 +169,21 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     }
     */
   }
+  if (action.type == 'update_infection_params') {
+    if(action.payload.per_contact_infection) {
+      InfectiousMatterRef.current.infection_params.per_contact_infection = action.payload.per_contact_infection;
+    }
+    if(action.payload.infectious_period_mu) {
+      InfectiousMatterRef.current.infection_params.infectious_period_mu = action.payload.infectious_period_mu;
+    }
+  }
+  if (action.type == 'update_agent_lifespan') {
+    if(action.payload.agent_lifespan) {
+      console.log("update lifespan!", action.payload.agent_lifespan)
+      InfectiousMatterRef.current.simulation_params.agent_lifespan = action.payload.agent_lifespan;
+    }
+  }
+
 };
 
 
@@ -180,7 +195,11 @@ const InfectiousMatterContainer = (props) => {
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
   const [movementScale, setMovementScale] = useState(2.0);
-  
+
+  const [agentLifespan, setAgentLifespan] = useState(50);
+  const [perContactInfection, setPerContactInfection] = useState(0.5);
+  const [infectiousPeriodMean, setInfectiousPeriodMean] = useState(5);
+
   const [redraw_trigger, setRedrawTrigger] = useState(0);
   const [worldReadyTrigger, setWorldReadyTrigger] = useState(0);
 
@@ -211,6 +230,17 @@ const InfectiousMatterContainer = (props) => {
   function handleMovementScaleChange(event, newValue) {
     setMovementScale(newValue);
   }
+  function handlePerContactInfectionChange(event, newValue) {
+    setPerContactInfection(newValue);
+  }
+
+  function handleInfectiousPeriodMean(event, newValue) {
+    setInfectiousPeriodMean(newValue);
+  }  
+
+  function handleAgentLifespanChange(event, newValue) {
+    setAgentLifespan(newValue);
+  }
 
   useEffect( () => {
     InfectiousMatterAPI (
@@ -232,7 +262,25 @@ const InfectiousMatterContainer = (props) => {
 
   useEffect( () => {
     InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: numMasked}});
-  }, [numMasked]);
+  }, [numMasked])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef, 
+      {type: 'update_infection_params', payload: {per_contact_infection: perContactInfection}});
+  }, [perContactInfection])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef, 
+      {type: 'update_infection_params', payload: {infectious_period_mu: infectiousPeriodMean}});
+    }, [infectiousPeriodMean])
+
+    useEffect( () => {
+      InfectiousMatterAPI (
+        InfectiousMatterRef,
+        {type: 'update_agent_lifespan', payload: {agent_lifespan: agentLifespan}});
+    }, [agentLifespan])
 
   return (
     <div className="App">
@@ -273,18 +321,7 @@ const InfectiousMatterContainer = (props) => {
         <Card className={classes.paper}>
           <List>
           <ListSubheader disableSticky={true}>World Settings</ListSubheader>
-          <ListItem>
-            <ListItemText id="Masks" primary="Number Masked" />
-              <Slider
-                value={numMasked}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="on"
-                onChange={handleNumMaskedSliderChange}
-                step={1}
-                min={0}
-                max={400}
-              />
-          </ListItem>
+      
           <ListItem>
             <ListItemText id="Movement" primary="Movement Scale" />
             <Slider
@@ -297,6 +334,59 @@ const InfectiousMatterContainer = (props) => {
               max={10}
             />
           </ListItem>
+
+          <ListItem>
+            <ListItemText id="lifespan" primary="Agent Lifespan" />
+              <Slider
+                value={agentLifespan}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="on"
+                onChange={handleAgentLifespanChange}
+                step={5}
+                min={5}
+                max={200}
+              />
+          </ListItem>
+
+          <ListSubheader disableSticky={true}>Infection Settings</ListSubheader>
+          <ListItem>
+            <ListItemText id="infectionRate" primary="Prob. Infection"/>
+              <Slider
+                value={perContactInfection}
+                aria-labelledby="continuous-slider"
+                onChange={handlePerContactInfectionChange}
+                valueLabelDisplay="on"
+                min={0}
+                max={1}
+                step={0.01}
+              />
+            </ListItem>
+          <ListItem>
+            <ListItemText id="infectiousPeriod" primary="Mean Infectious Days" />
+              <Slider
+                value={infectiousPeriodMean}
+                aria-labelledby="continuous-slider"
+                onChange={handleInfectiousPeriodMean}
+                valueLabelDisplay="on"
+                min={3}
+                max={12}
+                step={0.1}
+              />
+          </ListItem>
+          <ListItem>
+            <ListItemText id="Masks" primary="Number Masked" />
+              <Slider
+                value={numMasked}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="on"
+                onChange={handleNumMaskedSliderChange}
+                step={1}
+                min={0}
+                max={400}
+              />
+          </ListItem>
+
+
           <ListItem>
             <Grid container direction="row" spacing={3}>
               <Grid item>
@@ -308,9 +398,8 @@ const InfectiousMatterContainer = (props) => {
                 </Button>
               </Grid>
             </Grid>
-          </ListItem>          
+          </ListItem>
 
-          
           <ListSubheader disableSticky={true}>Mask Settings</ListSubheader>
           <ListItem>
             <ListItemText id="selfProtection" primary="Self Protection"/>

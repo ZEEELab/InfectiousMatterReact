@@ -168,7 +168,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_agents', payload:{residence: res9, num_agents: 70}});
 
         
-        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true });
+        InfectiousMatterRef.current.add_event({time: 1000, callback: InfectiousMatterRef.current.new_migration_event(), recurring: true, stale:false});
         
         
         InfectiousMatterAPI(InfectiousMatterRef, {type:'add_migration_link', payload: {from_location:res1.uuid, to_location:res2.uuid, num_agents:2}});
@@ -184,7 +184,6 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         //shuffle the agents
         Matter.Common.shuffle(InfectiousMatterRef.current.agents);
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'set_num_mask', payload: {num_masked: num_to_mask}});
-        console.log(num_to_mask);
     };
 
     useEffect(() => {
@@ -201,9 +200,9 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
         };
         
         let simulation_params = {
-            sim_time_per_day: 1000,
+            sim_time_per_day: 2000,
             agent_size: 3,
-            link_lifetime: 200,
+            link_lifetime: 2000,
         };
         simulation_params.link_lifetime = 7*simulation_params.sim_time_per_day;
         

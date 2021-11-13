@@ -10,6 +10,7 @@ function Agent(body) {
 	this.interaction_callback = undefined;
 	this.uuid = uniqid();
 	this.viva_color = undefined;
+	this.events = [];
 
 	this.location = undefined;
 	this.home = undefined;
@@ -18,6 +19,7 @@ function Agent(body) {
 	this.home_state = {};
 	this.migrating = false;
 	this.masked = false;
+	this.pathogen = undefined;
 }
 
 Agent.prototype.add_body = function(body) {

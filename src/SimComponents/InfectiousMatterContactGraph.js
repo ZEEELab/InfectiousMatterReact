@@ -32,6 +32,16 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI,
         for (let i=0; i < 30; i++) {
             viva_renderer.zoomOut();
         }
+
+        ContactGraph.on('changed', function(changes) {
+            changes.forEach( changeRecord =>  {
+                if(changeRecord.node && changeRecord.changeType == "add") {
+                    viva_graphics.getNodeUI(changeRecord.node.id).color = changeRecord.node.data.agent_object.viva_color;
+                    viva_graphics.getNodeUI(changeRecord.node.id).size = 40;
+                }
+            });
+        });
+
     }, []);
 
     useEffect ( () => {
@@ -42,6 +52,8 @@ const InfectiousMatterContactGraph = ({InfectiousMatterRef, InfectiousMatterAPI,
 
         InfectiousMatterAPI(InfectiousMatterRef, {type: 'forEach_agents', payload:{callback:color_agent}})
     }, [worldReadyTrigger])
+
+    //do we need to call this ^ every time we add a new agent? 
 
     return (
         <div ref={graph_div} style={{width:400, height:400}} >
