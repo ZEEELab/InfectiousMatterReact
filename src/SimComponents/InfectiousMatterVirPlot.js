@@ -1,33 +1,17 @@
 import React, {useEffect, useState, useReducer, useLayoutEffect} from 'react';
+import { jStat } from 'jstat';
 import Plot from 'react-plotly.js'; //TODO: use bundles to limit the size of this app
 import {AgentStates} from '../InfectiousMatter/simulation.js';
 
 let get_fresh_traces = function() {
-  let infected = {
-    x: [0],
-    y: [0],
-    type: "scatter",
-    name: "Infected",
-    marker: { color: "red" }
+  let contagiousness = {
+    x: [],
+    name: "Contagiousness",
+    type: 'histogram',
+    //histnorm: 'probability',
+    marker: { color: "grey" }
   };
-
-  let recovered = {
-    x: [0],
-    y: [0],
-    name: "Recovered",
-    type: "scatter",
-    marker: { color: "green" }
-  };
-
-  let susceptible = {
-      x: [0],
-      y: [0],
-      name: "Susceptible",
-      type: "scatter",
-      marker: { color: "grey" }
-  }
-  let plot_data = [infected, recovered, susceptible];
-  return plot_data;
+  return [contagiousness];
 }
 
 let infection_layout = {
@@ -45,11 +29,11 @@ let infection_layout = {
       y:1
   }, 
   xaxis: {
-      title: "Days",
-      rangemode: 'nonnegative'
+      title: "Contagiousness",
+      rangemode: 'nonnegative',
   }, 
   yaxis: {
-      title: "Count",
+      title: "Density",
       rangemode: 'nonnegative'
   },
   width:390,
@@ -62,6 +46,10 @@ function reducer(state, action) {
   if (!state) { console.log('didnt get state');}
   let new_state = [...state];
   switch (action.type) {
+    case 'set': {
+      new_state[0].x = action.payload.cur_contagousness;
+      return new_state;
+    }
     case 'extend': {
       new_state[0].x.push(action.payload.cur_time);
       new_state[0].y.push(action.payload.cur_state_counts[AgentStates.INFECTED]);
@@ -87,7 +75,7 @@ function reducer(state, action) {
   }
 }
 
-const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger}) => {
+const InfectiousMatterVirPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_trigger}) => {
 
   const [plotTraces, dispatchTraces] = useReducer(reducer, initial_traces);
   const [plotRevision, setPlotRevision] = useState(0);
@@ -95,9 +83,15 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_
   let plot_layout = infection_layout;
 
   useEffect( () => {
-    const update_traces = () => {
-        let api_return = InfectiousMatterAPI(InfectiousMatterRef, {type:'get_state_counts'});
-        dispatchTraces({type: 'extend', payload:{cur_time: api_return.cur_time, cur_state_counts: api_return.state_counts}});
+      const update_traces = () => {
+        let get_contagousness = (agent, agent_id) => {
+          if (agent.pathogen)
+            return agent.pathogen.contagiousness
+          return undefined
+        }
+        let api_return = InfectiousMatterAPI(InfectiousMatterRef, {type:'map_agents', payload: {callback:get_contagousness}});
+        let cur_contagousness = api_return.filter(e => e != null);
+        dispatchTraces({type: 'set', payload:{cur_contagousness: cur_contagousness}});
         setPlotRevision(p => p+1);
       };
 
@@ -123,4 +117,4 @@ const InfectiousMatterPlot = ({InfectiousMatterRef, InfectiousMatterAPI, redraw_
   );
 };
 
-export default InfectiousMatterPlot;
+export default InfectiousMatterVirPlot;

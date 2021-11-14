@@ -8,6 +8,7 @@ import { InfectiousMatter} from '../InfectiousMatter/simulation.js';
 import InfectiousMatterSimulation, {AgentStates, ContactGraph} from './InfectiousMatterSimulation.js';
 import InfectiousMatterContactGraph from './InfectiousMatterContactGraph.js';
 import InfectiousMatterMigrationTable from './InfectiousMatterMigrationTable';
+import InfectiousMatterVirPlot from './InfectiousMatterVirPlot';
 import InfectiousMatterPlot from './InfectiousMatterPlot.js';
 import Matter from 'matter-js';
 import Slider from '@material-ui/core/Slider';
@@ -284,7 +285,7 @@ const InfectiousMatterContainer = (props) => {
 
   return (
     <div className="App">
-      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={3}>
+      <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
         <Grid item>
           <Card className={classes.paper}>
           <InfectiousMatterPlot                 
@@ -294,6 +295,17 @@ const InfectiousMatterContainer = (props) => {
           />
           </Card>
         </Grid>
+
+        <Grid item>
+          <Card className={classes.paper}>
+            <InfectiousMatterVirPlot
+              InfectiousMatterRef={InfectiousMatterRef}
+              InfectiousMatterAPI={InfectiousMatterAPI}
+              redraw_trigger={redraw_trigger}
+            />
+          </Card>
+        </Grid>
+
         <Grid item>
         <Card className={classes.paper}>
           <InfectiousMatterSimulation 
@@ -316,8 +328,8 @@ const InfectiousMatterContainer = (props) => {
         </Grid>
       </Grid>
 
-      <Grid container direction="row" justify="center" alignItems="center" className={classes.root} spacing={10}>
-        <Grid item alignItems="flex-start">
+      <Grid container direction="row" justify="center" className={classes.root} spacing={10}>
+        <Grid item >
         <Card className={classes.paper}>
           <List>
           <ListSubheader disableSticky={true}>World Settings</ListSubheader>

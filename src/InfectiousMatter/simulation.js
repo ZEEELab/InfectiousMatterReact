@@ -103,7 +103,7 @@ function InfectiousMatter(run_headless, simulation_params, infection_params, sim
     this.matter_engine = Engine.create({
       positionIterations: 15, 
       velocityIterations: 15,
-      constraintIterations: 10
+      constraintIterations: 10,
     });
 
     this.matter_engine.world.gravity.y = 0.00;
@@ -293,7 +293,8 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     let update_org_event = {
         time: days_to_recover*this.simulation_params.sim_time_per_day,
         callback: () => {
-            this.update_org_state(org, AgentStates.RECOVERED)
+            this.update_org_state(org, AgentStates.RECOVERED);
+            org.agent_object.pathogen = undefined;
         },
         stale: false,
     };
@@ -378,7 +379,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.restitution = 1.1;
     new_agent_body.agent_object.home = home_location;
     new_agent_body.agent_object.viva_color = home_location.viva_node_color
-    new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/(this.simulation_params.agent_lifespan*1000));
+    new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/(this.simulation_params.agent_lifespan*this.simulation_params.sim_time_per_day));
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {agent_object:new_agent_body.agent_object, viva_color:home_location.viva_node_color});
 
     home_location.add_agent(new_agent_body.agent_object);
@@ -417,6 +418,8 @@ InfectiousMatter.prototype._death_birth = function(agent_to_remove) {
 };
 
 InfectiousMatter.prototype.delete_agent = function(an_agent) {
+    an_agent.location.remove_agent(an_agent);
+
     this.agents = this.agents.filter(function(a) {
 		return (a !== an_agent)
     });
@@ -498,7 +501,7 @@ InfectiousMatter.prototype.remove_migration_link = function(from_location_uuid, 
     }
 };
 
-
+//TODO: the migration events for new orgs goes away!!
 InfectiousMatter.prototype.new_migration_event = function() {
     return () => {
         this.migration_graph.forEachLink((link) => {
