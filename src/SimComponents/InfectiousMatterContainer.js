@@ -305,7 +305,8 @@ const InfectiousMatterContainer = (props) => {
             />
           </Card>
         </Grid>
-
+      </Grid>
+      <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
         <Grid item>
         <Card className={classes.paper}>
           <InfectiousMatterSimulation 
