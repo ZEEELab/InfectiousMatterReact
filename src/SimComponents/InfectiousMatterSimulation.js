@@ -223,6 +223,7 @@ const InfectiousMatterSimulation = ({InfectiousMatterRef, InfectiousMatterAPI, r
             fraction_isolate: 0.2,
             time_to_seek_care: 2.5,
             movement_scale: 2.0,
+            use_pathogen_contagiousness: true
         };
   
         let default_simulation_colors = {

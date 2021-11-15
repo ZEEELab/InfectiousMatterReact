@@ -20,6 +20,8 @@ function Agent(body) {
 	this.migrating = false;
 	this.masked = false;
 	this.pathogen = undefined;
+	this.birthtime = undefined;
+	this.lifetime = undefined;
 }
 
 Agent.prototype.add_body = function(body) {

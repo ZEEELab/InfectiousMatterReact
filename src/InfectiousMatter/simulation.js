@@ -283,12 +283,29 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     if (infecting_agent && infecting_agent.pathogen){ 
         org.agent_object.pathogen = infecting_agent.pathogen.get_offspring(this.simulation_params.pathogen_mut_prob);
     } else {
-        org.agent_object.pathogen = new Pathogen(0.5, 'root');
+        org.agent_object.pathogen = new Pathogen(0.5, 'root', this.infection_params.per_contact_infection);
     }
     this.update_org_state(org, AgentStates.INFECTED);
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
     let days_to_recover = Math.max(jStat.exponential.sample(1/this.infection_params.infectious_period_mu), 3);
+    
+    let time_left = (org.agent_object.birthtime + org.agent_object.lifetime) - this.cur_sim_time
+
+    //console.log(time_left, days_to_recover*this.simulation_params.sim_time_per_day, time_left > days_to_recover*this.simulation_params.sim_time_per_day)
+
+    console.log(org.agent_object.pathogen.get_lifespan_multiplier() * time_left)
+
+    let vir_death_event = {
+        time: org.agent_object.pathogen.get_lifespan_multiplier() * time_left,
+        callback: () => {
+            this.delete_agent(org.agent_object)
+            console.log("dying from virulence!")
+        },
+        stale: false
+    }
+    this.add_event(vir_death_event);
+    org.agent_object.events.push(vir_death_event);
 
     let update_org_event = {
         time: days_to_recover*this.simulation_params.sim_time_per_day,
@@ -301,6 +318,7 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
 
     this.add_event(update_org_event);
     org.agent_object.events.push(update_org_event);
+
 };
 
 InfectiousMatter.prototype.register_infection_callback = function(callback) {
@@ -380,6 +398,7 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
     new_agent_body.agent_object.home = home_location;
     new_agent_body.agent_object.viva_color = home_location.viva_node_color
     new_agent_body.agent_object.lifetime = jStat.exponential.sample(1/(this.simulation_params.agent_lifespan*this.simulation_params.sim_time_per_day));
+    new_agent_body.agent_object.birthtime = this.cur_sim_time;
     new_agent_body.node = ContactGraph.addNode(new_agent_body.agent_object.uuid, {agent_object:new_agent_body.agent_object, viva_color:home_location.viva_node_color});
 
     home_location.add_agent(new_agent_body.agent_object);
@@ -400,6 +419,8 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 
     World.add(this.matter_engine.world, new_agent_body);
     
+    //TODO: split this into death and birth so that if an agent is removed 
+    //before birth, the birth still occurs correctly at the right time...
     this.add_event( {
         time: new_agent_body.agent_object.lifetime,
         callback: this._death_birth(new_agent_body.agent_object),
@@ -407,15 +428,21 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
         stale:false
     } );
 
+
     return(new_agent_body);
 };
+
 InfectiousMatter.prototype._death_birth = function(agent_to_remove) {
     return () => {
         let home_loc = agent_to_remove.home;
+        let masked = agent_to_remove.masked;
         this.delete_agent(agent_to_remove);
-        this.add_agent(home_loc);
+        let new_agent = this.add_agent(home_loc);
+        new_agent.agent_object.masked = masked;
+
     };
 };
+
 
 InfectiousMatter.prototype.delete_agent = function(an_agent) {
     an_agent.location.remove_agent(an_agent);
@@ -428,7 +455,6 @@ InfectiousMatter.prototype.delete_agent = function(an_agent) {
     ContactGraph.removeNode(an_agent.uuid);
 
     this.state_counts[an_agent.state] -= 1;
-    //TODO: Clear events associated with this agent?
     an_agent.events.forEach((event) => {event.stale = true;})
 }
 

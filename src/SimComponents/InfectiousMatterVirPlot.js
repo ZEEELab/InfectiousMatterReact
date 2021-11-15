@@ -48,6 +48,7 @@ function reducer(state, action) {
   switch (action.type) {
     case 'set': {
       new_state[0].x = action.payload.cur_contagousness;
+      new_state[0].name = "Mean Contagiousness: " + jStat.mean(action.payload.cur_contagousness).toPrecision(3)
       return new_state;
     }
     case 'extend': {

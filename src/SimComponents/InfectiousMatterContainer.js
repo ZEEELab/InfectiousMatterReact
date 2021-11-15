@@ -42,9 +42,17 @@ const useStyles = makeStyles((theme) => ({
 
 InfectiousMatter.prototype.mask_transmission_props = { self_protection:0.05, others_protection:0.5};
 
+InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
+
+}
+
 //agent_a is always a susceptable exposed to an infected (agent_b)
 InfectiousMatter.prototype.calc_prob_infection = function(agent_a_body, agent_b_body) {
   let default_infection_prob = this.infection_params.per_contact_infection;
+  
+  if(this.infection_params.use_pathogen_contagiousness) {
+    default_infection_prob = agent_b_body.agent_object.pathogen.contagiousness;
+  }
   if(agent_a_body.agent_object.masked && agent_b_body.agent_object.masked)
       return default_infection_prob * (1-this.mask_transmission_props.self_protection) * (1-this.mask_transmission_props.others_protection);
   else if (agent_a_body.agent_object.masked &&! agent_b_body.agent_object.masked)
@@ -139,7 +147,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
         unmasked_list.push(agent);
       }
     });
-
+    //TODO: This crashes if num_to_mask is greater tha pop
     let cur_num_masked = masked_list.length;
     let num_needing_masks = action.payload.num_masked - cur_num_masked;
     if (num_needing_masks > 0) {
@@ -180,11 +188,9 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
   }
   if (action.type == 'update_agent_lifespan') {
     if(action.payload.agent_lifespan) {
-      console.log("update lifespan!", action.payload.agent_lifespan)
       InfectiousMatterRef.current.simulation_params.agent_lifespan = action.payload.agent_lifespan;
     }
   }
-
 };
 
 
@@ -395,7 +401,7 @@ const InfectiousMatterContainer = (props) => {
                 onChange={handleNumMaskedSliderChange}
                 step={1}
                 min={0}
-                max={400}
+                max={630}
               />
           </ListItem>
 
