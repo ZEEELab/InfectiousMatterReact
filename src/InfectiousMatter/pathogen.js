@@ -27,7 +27,7 @@ function Pathogen(color, parent, contagiousness) {
 Pathogen.prototype.get_lifespan_multiplier = function() {
 	// contagiousness varies between 0 - 1, 
 	// (1 - contagiousness) * lifespan -> 
-	return 1 - this.contagiousness
+	return (1.01 - this.contagiousness)
 }
 Pathogen.prototype.get_offspring = function(mut_rate) {
 	let offspring_color = this.color_float;

@@ -289,35 +289,49 @@ InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, i
     if (this.post_infection_callback) this.post_infection_callback(org.agent_object, infecting_agent);
 
     let days_to_recover = Math.max(jStat.exponential.sample(1/this.infection_params.infectious_period_mu), 3);
-    
     let time_left = (org.agent_object.birthtime + org.agent_object.lifetime) - this.cur_sim_time
 
-    //console.log(time_left, days_to_recover*this.simulation_params.sim_time_per_day, time_left > days_to_recover*this.simulation_params.sim_time_per_day)
+    if (org.agent_object.pathogen.get_lifespan_multiplier() * time_left < days_to_recover*this.simulation_params.sim_time_per_day) {
+        let vir_death_event = {
+            time: org.agent_object.pathogen.get_lifespan_multiplier() * time_left,
+            callback: () => {
+                this.delete_agent(org.agent_object)
+            },
+            stale: false
+        }
+        this.add_event(vir_death_event);
+        org.agent_object.events.push(vir_death_event);
 
-    console.log(org.agent_object.pathogen.get_lifespan_multiplier() * time_left)
+        var killed_masked = org.agent_object.masked;
+        var killed_home = org.agent_object.home;
 
-    let vir_death_event = {
-        time: org.agent_object.pathogen.get_lifespan_multiplier() * time_left,
-        callback: () => {
-            this.delete_agent(org.agent_object)
-            console.log("dying from virulence!")
-        },
-        stale: false
+        //TODO: If we die by virulence, let's add a birth event here when the agent should have originally died.
+        this.add_event( {
+            time: time_left,
+            callback: () => {
+                let new_agent = this.add_agent(killed_home, AgentStates.SUSCEPTIBLE);
+                new_agent.agent_object.masked = killed_masked;
+            },
+            stale: false
+        })
+
+    } else {
+        let update_org_event = {
+            time: days_to_recover*this.simulation_params.sim_time_per_day,
+            callback: () => {
+                this.update_org_state(org, AgentStates.RECOVERED);
+                org.agent_object.pathogen = undefined;
+            },
+            stale: false,
+        };
+    
+        this.add_event(update_org_event);
+        org.agent_object.events.push(update_org_event);
     }
-    this.add_event(vir_death_event);
-    org.agent_object.events.push(vir_death_event);
 
-    let update_org_event = {
-        time: days_to_recover*this.simulation_params.sim_time_per_day,
-        callback: () => {
-            this.update_org_state(org, AgentStates.RECOVERED);
-            org.agent_object.pathogen = undefined;
-        },
-        stale: false,
-    };
 
-    this.add_event(update_org_event);
-    org.agent_object.events.push(update_org_event);
+
+
 
 };
 
@@ -419,15 +433,17 @@ InfectiousMatter.prototype.add_agent = function(home_location, agent_state=Agent
 
     World.add(this.matter_engine.world, new_agent_body);
     
-    //TODO: split this into death and birth so that if an agent is removed 
-    //before birth, the birth still occurs correctly at the right time...
-    this.add_event( {
+    // #### HANDLE BIRTH AND DEATH EVENTS ####
+    //Death Event
+    let agent_birth_death_event = {
         time: new_agent_body.agent_object.lifetime,
         callback: this._death_birth(new_agent_body.agent_object),
         recurring:false,
         stale:false
-    } );
+    };
 
+    this.add_event(agent_birth_death_event);
+    new_agent_body.agent_object.events.push(agent_birth_death_event);
 
     return(new_agent_body);
 };
