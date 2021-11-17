@@ -61,12 +61,13 @@ var default_simulation_params = {
     sim_time_per_day:1000,
     agent_size: 3,
     link_lifetime: 3000,
-    pathogen_mut_prob: 0.3,
     agent_lifespan: 50,
 };
 
 var default_infection_params = {
     per_contact_infection: 0.5, 
+    pathogen_mut_prob: 0.3,
+
 
     incubation_period_mu: 5,
     incubation_period_sigma: 3,
@@ -281,7 +282,7 @@ InfectiousMatter.prototype.assign_cohort = function(org, cohort) {
 
 InfectiousMatter.prototype.expose_org = function(org, eventual_infected_state, infecting_agent) {
     if (infecting_agent && infecting_agent.pathogen){ 
-        org.agent_object.pathogen = infecting_agent.pathogen.get_offspring(this.simulation_params.pathogen_mut_prob);
+        org.agent_object.pathogen = infecting_agent.pathogen.get_offspring(this.infection_params.pathogen_mut_prob);
     } else {
         org.agent_object.pathogen = new Pathogen(0.5, 'root', this.infection_params.per_contact_infection);
     }

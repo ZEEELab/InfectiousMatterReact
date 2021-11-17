@@ -34,7 +34,8 @@ Pathogen.prototype.get_offspring = function(mut_rate) {
 	let new_pathogen = new Pathogen(offspring_color);
 	new_pathogen.contagiousness = this.contagiousness;
 	
-	if (Math.random() < mut_rate && this.mutation_function) {
+	let mut_draw = Math.random();
+	if (mut_draw < mut_rate && this.mutation_function) {
 		new_pathogen.mutation_function(this);
 	}
 	return new_pathogen;

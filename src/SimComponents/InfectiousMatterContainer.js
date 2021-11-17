@@ -81,6 +81,11 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
       InfectiousMatterRef.current.infection_params.movement_scale = action.payload.movement_scale;
     }
   }
+  if (action.type == 'update_pathogen_mut_prob') {
+    if (action.payload.pathogen_mut_prob != undefined) {
+      InfectiousMatterRef.current.infection_params.pathogen_mut_prob = action.payload.pathogen_mut_prob;
+    }
+  }
   if (action.type == 'reset_simulator') {
     InfectiousMatterRef.current.clear_simulator();
     InfectiousMatterRef.current.setup_matter_env();
@@ -149,7 +154,7 @@ const InfectiousMatterAPI = (InfectiousMatterRef, action) => {
     });
     //TODO: This crashes if num_to_mask is greater tha pop
     let cur_num_masked = masked_list.length;
-    let num_needing_masks = action.payload.num_masked - cur_num_masked;
+    let num_needing_masks = Math.min(action.payload.num_masked - cur_num_masked, InfectiousMatterRef.current.agents.length);
     if (num_needing_masks > 0) {
       for(let i=0; i< num_needing_masks; i++) {
         unmasked_list[i].masked = true;
@@ -202,6 +207,7 @@ const InfectiousMatterContainer = (props) => {
   const [maskSelfProtection, setMaskSelfProtection] = useState(0.05);
   const [maskOthersProtection, setMaskOthersProtection] = useState(0.5);
   const [movementScale, setMovementScale] = useState(2.0);
+  const [pathogenMutProb, setPathogenMutProb] = useState(0.5);
 
   const [agentLifespan, setAgentLifespan] = useState(50);
   const [perContactInfection, setPerContactInfection] = useState(0.5);
@@ -249,11 +255,21 @@ const InfectiousMatterContainer = (props) => {
     setAgentLifespan(newValue);
   }
 
+  function handlePathogenMutProbChange(event, newValue) {
+    setPathogenMutProb(newValue);
+  }
+
   useEffect( () => {
     InfectiousMatterAPI (
       InfectiousMatterRef, 
       {type: 'update_mask_transmission_params', payload: {self_protection: maskSelfProtection}});
   }, [maskSelfProtection])
+
+  useEffect( () => {
+    InfectiousMatterAPI (
+      InfectiousMatterRef,
+      {type: 'update_pathogen_mut_prob', payload: {pathogen_mut_prob: pathogenMutProb}});
+  }, [pathogenMutProb]);
 
   useEffect( () => {
     InfectiousMatterAPI (
@@ -293,27 +309,6 @@ const InfectiousMatterContainer = (props) => {
     <div className="App">
       <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
         <Grid item>
-          <Card className={classes.paper}>
-          <InfectiousMatterPlot                 
-            InfectiousMatterRef={InfectiousMatterRef}
-            InfectiousMatterAPI={InfectiousMatterAPI}
-            redraw_trigger={redraw_trigger}
-          />
-          </Card>
-        </Grid>
-
-        <Grid item>
-          <Card className={classes.paper}>
-            <InfectiousMatterVirPlot
-              InfectiousMatterRef={InfectiousMatterRef}
-              InfectiousMatterAPI={InfectiousMatterAPI}
-              redraw_trigger={redraw_trigger}
-            />
-          </Card>
-        </Grid>
-      </Grid>
-      <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
-        <Grid item>
         <Card className={classes.paper}>
           <InfectiousMatterSimulation 
             InfectiousMatterRef={InfectiousMatterRef}
@@ -330,6 +325,27 @@ const InfectiousMatterContainer = (props) => {
               InfectiousMatterRef={InfectiousMatterRef}
               InfectiousMatterAPI={InfectiousMatterAPI} 
               worldReadyTrigger={worldReadyTrigger}
+            />
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container direction="row" justify="center" className={classes.root} spacing={3}>
+        <Grid item>
+          <Card className={classes.paper}>
+          <InfectiousMatterPlot                 
+            InfectiousMatterRef={InfectiousMatterRef}
+            InfectiousMatterAPI={InfectiousMatterAPI}
+            redraw_trigger={redraw_trigger}
+          />
+          </Card>
+        </Grid>
+
+        <Grid item>
+          <Card className={classes.paper}>
+            <InfectiousMatterVirPlot
+              InfectiousMatterRef={InfectiousMatterRef}
+              InfectiousMatterAPI={InfectiousMatterAPI}
+              redraw_trigger={redraw_trigger}
             />
           </Card>
         </Grid>
@@ -369,18 +385,6 @@ const InfectiousMatterContainer = (props) => {
 
           <ListSubheader disableSticky={true}>Infection Settings</ListSubheader>
           <ListItem>
-            <ListItemText id="infectionRate" primary="Prob. Infection"/>
-              <Slider
-                value={perContactInfection}
-                aria-labelledby="continuous-slider"
-                onChange={handlePerContactInfectionChange}
-                valueLabelDisplay="on"
-                min={0}
-                max={1}
-                step={0.01}
-              />
-            </ListItem>
-          <ListItem>
             <ListItemText id="infectiousPeriod" primary="Mean Infectious Days" />
               <Slider
                 value={infectiousPeriodMean}
@@ -404,7 +408,30 @@ const InfectiousMatterContainer = (props) => {
                 max={630}
               />
           </ListItem>
-
+          <ListItem>
+            <ListItemText id="infectionRate" primary="Prob. Infection"/>
+              <Slider
+                value={perContactInfection}
+                aria-labelledby="continuous-slider"
+                onChange={handlePerContactInfectionChange}
+                valueLabelDisplay="on"
+                min={0}
+                max={1}
+                step={0.01}
+              />
+            </ListItem>
+            <ListItem>
+            <ListItemText id="pathogenMutProb" primary="Pathogen Mutation Rate"/>
+              <Slider
+                value={pathogenMutProb}
+                aria-labelledby="discrete-slider"
+                onChange={handlePathogenMutProbChange}
+                valueLabelDisplay="on"
+                min={0.00}
+                max={1.0}
+                step={0.1}
+              />
+            </ListItem>
 
           <ListItem>
             <Grid container direction="row" spacing={3}>
